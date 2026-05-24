@@ -1,0 +1,11 @@
+# CLAUDE.local.md (example — copy to CLAUDE.local.md, gitignored)
+
+> **Para que serve:** Modelo de overrides locais e pessoais do Claude Code (não versionado).
+> **Função:** Documentar preferências de máquina (modelo, URLs de dev) sem expor secrets no git.
+
+## Overrides pessoais
+
+- Modelo preferido nesta máquina: sonnet
+- `DATABASE_URL` local aponta para Postgres em localhost (dev only)
+
+Não colocar tokens ou secrets reais neste arquivo.

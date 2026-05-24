@@ -1,0 +1,37 @@
+---
+description: Padrões de testes — ativar ao editar arquivos de teste
+globs:
+  - "tests/**/*.py"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+alwaysApply: false
+---
+
+> **Para que serve:** Regra glob ao editar arquivos de teste Python/TS.
+> **Função:** Padronizar estrutura pytest/httpx, mocks e cobertura mínima esperada (template).
+
+# Padrões de Teste (template)
+
+## Estrutura
+- Arrange / Act / Assert explícitos
+- Nome do teste descreve cenário: `test_list_items_returns_401_when_unauthenticated`
+- Mock de serviços externos; sem rede real em CI
+
+## Exemplo (Python)
+
+```python
+async def test_create_item_returns_201(client, auth_headers):
+  payload = {"name": "Widget", "sku": "WDG-001"}
+  response = await client.post("/api/v1/items/", json=payload, headers=auth_headers)
+  assert response.status_code == 201
+  assert response.json()["data"]["name"] == "Widget"
+```
+
+## Cobertura mínima sugerida
+- Sucesso (200/201), 401, 403, 422 (validação)
+- Casos de erro de domínio relevantes
+
+## Anti-padrões
+- ❌ Teste que depende de ordem de execução
+- ❌ Assert genérico (`assert response.ok`)
+- ❌ Credenciais ou tokens reais em fixtures

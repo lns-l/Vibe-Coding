@@ -1,0 +1,29 @@
+---
+description: Auditoria/compliance em operações sensíveis — ativar em services e routes
+globs:
+  - "src/services/**/*.py"
+  - "src/routers/**/*.py"
+alwaysApply: false
+---
+
+> **Para que serve:** Regra glob para operações sensíveis em services/routers.
+> **Função:** Garantir registro de auditoria em mutações de negócio (template fictício).
+
+# Cobertura de Auditoria (template fictício)
+
+## Operações que exigem registro
+- Criação, atualização ou exclusão de recursos de negócio
+- Alteração de permissões ou configuração sensível
+
+## Campos mínimos
+- `actor_id`, `action`, `resource_type`, `resource_id`, `result`, `timestamp`
+
+## Regras
+- Auditoria nunca bloqueia a operação principal — try/except local
+- Logs sem PII, credenciais ou tokens
+- Nova ação visível ao usuário → label no frontend
+
+## Anti-padrões
+- ❌ Mutação de estado sem registro
+- ❌ Registro sem identificação do ator
+- ❌ Dados sensíveis no payload de log

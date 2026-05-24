@@ -1,5 +1,8 @@
 # Vibe Coding no Cursor
 
+> **Para que serve:** Coleção de prompts prontos para o fluxo planejar → implementar → revisar no Cursor.
+> **Função:** Copiar e adaptar blocos de instrução que mantêm escopo mínimo, testes e critérios de aceite explícitos.
+
 Esta documentação reúne prompts práticos para orientar o desenvolvimento com a plataforma Cursor.
 
 ## Prompt base (planejamento)

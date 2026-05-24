@@ -1,0 +1,16 @@
+{
+  "_comment": "Copy to settings.local.json (gitignored) for machine-specific overrides",
+  "_documentation": {
+    "para_que_serve": "Modelo de overrides locais do Claude Code.",
+    "funcao": "Permissões e env específicos da máquina — copiar para settings.local.json (gitignored)."
+  },
+  "env": {
+    "DATABASE_URL": "postgresql://acme:acme@localhost:5432/acme_dev"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(psql *)",
+      "Bash(pytest *)"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+---
+description: Padrões de endpoint FastAPI — ativar ao editar routers da API de exemplo
+globs:
+  - "src/routers/**/*.py"
+  - "src/api/**/*.py"
+alwaysApply: false
+---
+
+> **Para que serve:** Regra glob ao editar routers da API fictícia Acme.
+> **Função:** Exigir `response_model`, auth, validação Pydantic e anti-padrões de endpoint cru.
+
+# Padrões de Endpoint (template)
+
+## Estrutura
+- `response_model` explícito em toda rota
+- Auth: `Depends(get_current_user)` em rotas sensíveis
+- Validação: schemas Pydantic (`ItemCreate`, não `dict` cru)
+
+## Exemplo
+
+```python
+@router.get("/", response_model=list[ItemResponse])
+async def list_items(
+    page: int = Query(1, ge=1),
+    user: User = Depends(get_current_user),
+) -> list[ItemResponse]:
+    return await item_service.list_for_user(user.id, page=page)
+```
+
+## Anti-padrões
+- ❌ Retornar documento ORM direto sem schema
+- ❌ `print()` para erros — usar logger do projeto
+- ❌ Endpoint admin sem checagem de role

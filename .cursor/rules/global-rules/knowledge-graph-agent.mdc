@@ -1,0 +1,25 @@
+---
+description: Usar knowledge graph em análises de arquitetura (template — desativado até configurar grafo)
+alwaysApply: false
+---
+
+> **Para que serve:** Regra agent para análises com grafo de dependências (template).
+> **Função:** Orientar quando consultar o grafo em perguntas de arquitetura — desativada até configurar `docs/graph/`.
+
+# Knowledge Graph (template)
+
+O grafo de dependências ficará em `docs/graph/` (placeholder).
+
+## Quando usar
+- Perguntas sobre arquitetura ou acoplamento entre módulos
+- Antes de feature que afeta múltiplos domínios
+- Identificar god nodes
+
+## Como usar
+1. Ler relatório de arquitetura gerado pelo grafo
+2. Preferir wiki navegável a raw files quando existir
+3. Após mudanças estruturais: atualizar grafo (hook `update-graph-on-session.py`)
+
+## Quando não usar
+- Arquivo específico já aberto no editor
+- Busca simples resolvida com grep

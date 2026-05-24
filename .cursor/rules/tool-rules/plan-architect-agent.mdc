@@ -1,0 +1,33 @@
+---
+description: Estrutura de planos multiagente em `.cursor/plans/` — usar ao criar ou editar `.plan.md`
+globs:
+  - ".cursor/plans/**/*.plan.md"
+  - ".cursor/plans/**/*.md"
+alwaysApply: false
+---
+
+> **Para que serve:** Regra agent para autorar planos `.plan.md` no Cursor.
+> **Função:** Definir frontmatter, seções obrigatórias e anti-padrões de paralelismo inseguro.
+
+# Plan Architect (template)
+
+## Frontmatter obrigatório
+- `name`, `overview`, `todos` (F1..FN + Encerramento), `isProject`
+
+## Seções obrigatórias
+1. **Contexto** — tabela com branch, objetivo, referências, arquivos críticos, validação
+2. **Diagrama de dependências** — Mermaid com arestas reais apenas
+3. **Convenções de execução** — idioma, credenciais, paralelo seguro
+4. **Modelos por fase** — tier mínimo suficiente (ver `MODEL_SELECTION_GUIDE.md`)
+5. **Fases F1..FN** — objetivo, arquivos, mudanças comportamentais, checklist
+6. **Encerramento** — critérios mensuráveis (comando que retorna 0)
+
+## Regras de escrita
+- Mudanças descrevem **comportamento**, não snippets de implementação
+- Máximo 8 fases; cada fase ≤ 25 linhas no arquivo
+- Paralelo só com arquivos disjuntos (ver `PARALLEL_AGENTS.md`)
+
+## Anti-padrões
+- ❌ Plano sem discovery (contexto com suposições)
+- ❌ Fases paralelas com interseção de arquivos
+- ❌ Encerramento sem comando de validação

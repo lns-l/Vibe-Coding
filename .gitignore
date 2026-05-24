@@ -1,0 +1,18 @@
+# Local overrides (never commit)
+CLAUDE.local.md
+.claude/settings.local.json
+.cursor/mcp.env
+
+# Session / hook state
+.cursor/.graph_session_ts
+.claude/.session_hook_ts
+
+# Python hook cache
+.cursor/hooks/__pycache__/
+**/__pycache__/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~

@@ -1,0 +1,19 @@
+{
+  "_documentation": {
+    "para_que_serve": "Configuração de servidores MCP no Cursor (template).",
+    "funcao": "Declarar GitHub MCP; tokens via .cursor/mcp.env (gitignored)."
+  },
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--env-file",
+        "${workspaceFolder}/.cursor/mcp.env",
+        "ghcr.io/github/github-mcp-server"
+      ]
+    }
+  }
+}

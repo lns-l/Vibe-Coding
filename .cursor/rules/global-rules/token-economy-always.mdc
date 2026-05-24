@@ -1,0 +1,15 @@
+---
+description: Reduz consumo de contexto — preferir busca direcionada e skills sob demanda
+alwaysApply: true
+---
+
+> **Para que serve:** Regra global de economia de tokens no Cursor.
+> **Função:** Reduzir ruído de contexto — busca cirúrgica, skills sob demanda e MCP desligado quando inútil.
+
+# Economia de Tokens
+
+- Não anexar arquivos em massa; usar busca ou `@file` cirúrgico
+- Rules `alwaysApply` devem ser curtas; detalhes longos em Skills
+- Uma conversa por objetivo principal
+- Desativar MCP servers não usados na tarefa atual
+- Preferir `@codebase` a listar dezenas de paths manualmente

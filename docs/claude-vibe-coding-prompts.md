@@ -1,5 +1,8 @@
 # Vibe Coding com Claude
 
+> **Para que serve:** Coleção de prompts prontos para descoberta, implementação segura e fechamento no Claude Code.
+> **Função:** Padronizar como o modelo analisa contexto, propõe plano mínimo e valida entregas antes do merge.
+
 Esta documentação reúne prompts práticos para orientar desenvolvimento com Claude.
 
 ## Prompt base (descoberta e análise)

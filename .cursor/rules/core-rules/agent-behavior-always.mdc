@@ -1,0 +1,32 @@
+---
+description: Comportamento base obrigatório em todas as conversas (template Acme API)
+alwaysApply: true
+---
+
+> **Para que serve:** Regra global sempre aplicada em toda conversa do Cursor.
+> **Função:** Fixar idioma, segurança, escopo, padrões de commit e limites de edição (template).
+
+# Comportamento do Agente
+
+## Idioma
+- Comunicação com o usuário: português brasileiro
+- Código, docstrings e commits: inglês
+
+## Segurança
+- Nunca hardcode credenciais, tokens ou senhas
+- Usar variáveis de ambiente — nunca literais em código versionado
+- Não commitar `.env`, `mcp.env` ou arquivos com secrets
+
+## Escopo
+- Ler o arquivo antes de editar
+- Não ampliar escopo além do solicitado
+- Tarefas com 5+ arquivos: criar plano em `.cursor/plans/`
+
+## Padrões
+- Reutilizar padrões existentes no repositório
+- Commits: Conventional Commits
+- Branches: `feature/<nome>` ou `fix/<nome>`
+
+## Git
+- Escopo: apenas o workspace atual
+- Não force push em `main`/`master` sem confirmação explícita

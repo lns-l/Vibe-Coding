@@ -1,0 +1,32 @@
+# Para que serve: exclusões de contexto do Cursor AI (template).
+# Função: impedir indexação de secrets, builds e artefatos — não é barreira de segurança.
+# Cursor AI context exclusions (template)
+# Best-effort — not a security boundary
+
+# Secrets
+.env
+.env.*
+!.env.example
+.cursor/mcp.env
+secrets/
+*.pem
+*.key
+
+# Builds and artifacts
+dist/
+build/
+.next/
+__pycache__/
+*.pyc
+coverage/
+
+# Dependencies
+node_modules/
+.venv/
+vendor/
+
+# Large / binary data
+*.sql
+*.csv
+*.parquet
+*.sqlite

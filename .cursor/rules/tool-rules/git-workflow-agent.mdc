@@ -1,0 +1,29 @@
+---
+description: Fluxo Git, branches, commits e PRs — invocar em tarefas de versionamento
+alwaysApply: false
+---
+
+> **Para que serve:** Regra agent para tarefas de versionamento Git.
+> **Função:** Padronizar branches, Conventional Commits e fluxo de PR sem commitar secrets.
+
+# Git Workflow (template)
+
+## Commits
+- Formato: Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)
+- Uma mudança lógica por commit; mensagem no imperativo, em inglês
+- Nunca commitar `.env`, `mcp.env` ou arquivos com secrets
+
+## Branches
+- Features: `feature/<slug-descritivo>`
+- Fixes: `fix/<issue-ou-slug>`
+- Agentes: `agent/<task-slug>`
+
+## Pull Requests
+- Título < 70 caracteres; body com Summary + Test plan
+- Revisar diff antes de push; sem force push em `main` sem confirmação
+- Usar `/pr` ou skill equivalente para fluxo padronizado
+
+## Anti-padrões
+- ❌ `wip`, `fix bug`, mensagens vagas
+- ❌ Commit de arquivos gerados ou de credenciais
+- ❌ Amend após push remoto sem autorização explícita

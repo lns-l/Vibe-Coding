@@ -1,0 +1,27 @@
+---
+description: Operações Docker e infra local — invocar ao editar Dockerfile, compose ou scripts de deploy
+alwaysApply: false
+---
+
+> **Para que serve:** Regra agent para Docker e infra local.
+> **Função:** Aplicar princípios de compose, builds multi-stage e secrets via env ao editar infra.
+
+# Docker Ops (template)
+
+## Princípios
+- Multi-stage build no frontend; imagens base pinadas (`python:3.12-slim`, `node:20-alpine`)
+- Secrets via `env_file` ou env vars — nunca no Dockerfile
+- Não expor portas desnecessárias no `docker-compose.yml`
+
+## Compose
+- Serviços nomeados de forma consistente
+- Volumes para dados persistentes documentados
+- Healthchecks onde aplicável
+
+## Anti-padrões
+- ❌ Tag `:latest` em produção
+- ❌ `ENV SECRET=valor` no Dockerfile
+- ❌ Reset de volumes sem confirmação explícita do usuário
+
+## Commands relacionados
+- `/infra-up`, `/infra-down` (criar conforme necessidade do projeto)

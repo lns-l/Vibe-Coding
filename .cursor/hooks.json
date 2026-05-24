@@ -1,0 +1,29 @@
+{
+  "_documentation": {
+    "para_que_serve": "Registro de hooks do Cursor para este template.",
+    "funcao": "Ligar eventos (shell, sessão) aos scripts Python em .cursor/hooks/."
+  },
+  "hooks": [
+    {
+      "name": "check-commit-msg",
+      "event": "beforeShellExecution",
+      "script": ".cursor/hooks/check-commit-msg.py",
+      "failClosed": false,
+      "description": "Validates Conventional Commits on git commit"
+    },
+    {
+      "name": "check-linter",
+      "event": "beforeShellExecution",
+      "script": ".cursor/hooks/check-linter.py",
+      "failClosed": true,
+      "description": "Blocks commit when project linter fails (template — customize command)"
+    },
+    {
+      "name": "update-graph-on-session",
+      "event": "sessionStart",
+      "script": ".cursor/hooks/update-graph-on-session.py",
+      "failClosed": false,
+      "description": "Throttled background task on session start (knowledge graph placeholder)"
+    }
+  ]
+}
