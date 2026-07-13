@@ -31,6 +31,7 @@ Guia completo: [docs/CURSOR_STRUCTURE_GUIDE.md](../docs/CURSOR_STRUCTURE_GUIDE.m
 | `rules/tool-rules/docker-ops-agent.mdc` | Docker / infra | Compose e deploy local sob demanda |
 | `rules/tool-rules/plan-architect-agent.mdc` | Planos multiagente | Formato obrigatório de `.plan.md` |
 | `rules/example-stack-rules/api-patterns-auto.mdc` | Padrões API | Exemplo FastAPI ao editar `src/**/*.py` |
+| `rules/example-stack-rules/ldap-auth-patterns-auto.mdc` | LDAP / Auth | TLS, escape RFC 4515, JWT cookie httpOnly, rate limiting |
 | `rules/example-stack-rules/audit-coverage-auto.mdc` | Auditoria | Cobertura e checklist ao tocar auditoria |
 | `rules/testing-rules/test-patterns-auto.mdc` | Testes | Padrões pytest/httpx em `tests/**` |
 | **hooks/** | Automação | Scripts Python acionados por `hooks.json` |

@@ -4,23 +4,54 @@ alwaysApply: false
 ---
 
 > **Para que serve:** Regra agent para Docker e infra local.
-> **Função:** Aplicar princípios de compose, builds multi-stage e secrets via env ao editar infra.
+> **Função:** Aplicar princípios de compose, builds multi-stage, segurança de runtime e secrets via env.
 
-# Docker Ops (template)
+# Docker Ops
 
-## Princípios
-- Multi-stage build no frontend; imagens base pinadas (`python:3.12-slim`, `node:20-alpine`)
-- Secrets via `env_file` ou env vars — nunca no Dockerfile
-- Não expor portas desnecessárias no `docker-compose.yml`
+## Dockerfiles
+
+### Backend (single-stage mínimo)
+- Imagem base: `python:3.12-slim`
+- Instalar dependências de sistema antes do pip (ex.: `libldap2-dev` para python-ldap)
+- Criar usuário non-root e trocar com `USER appuser` antes do `CMD`
+- `EXPOSE` apenas a porta do serviço; nunca publicar no host sem necessidade
+
+### Frontend (multi-stage obrigatório)
+- **Stage 1:** `node:20-alpine` → `npm run build` → artefato em `/dist`
+- **Stage 2:** `nginx:alpine` serve `/usr/share/nginx/html`
+- Security headers via arquivo `nginx-security-headers.conf` incluído no nginx.conf
+- Proxy reverso de `/api` para o backend — evita CORS entre domínios em produção
 
 ## Compose
-- Serviços nomeados de forma consistente
-- Volumes para dados persistentes documentados
-- Healthchecks onde aplicável
+
+```yaml
+# Padrão de isolamento de portas
+services:
+  frontend:
+    ports: ["3000:80"]       # único ponto de entrada exposto no host
+  backend:
+    expose: ["8000"]         # interno — não publicar porta no host
+    env_file: backend/config.env
+  database:
+    expose: ["27017"]        # interno
+    volumes: ["db_data:/data/db"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping')"]
+  cache:
+    expose: ["6379"]         # interno — nunca porta host para Redis
+```
+
+## Secrets em produção
+
+- Montar via Docker secrets: `./secrets/key_file:/run/secrets/key` + `SECRET_FILE=/run/secrets/key`
+- Padrão `*_FILE` no `config.py` para resolver secrets de arquivo
+- Nunca `ENV SECRET=valor` no Dockerfile
 
 ## Anti-padrões
-- ❌ Tag `:latest` em produção
-- ❌ `ENV SECRET=valor` no Dockerfile
+- ❌ Tag `:latest` em produção — usar tag semântica ou digest
+- ❌ `ENV SECRET=valor` no Dockerfile — hardcode em imagem
+- ❌ Porta de banco/cache exposta no host sem VPN/firewall
+- ❌ Rodar processo principal como `root` no container
 - ❌ Reset de volumes sem confirmação explícita do usuário
 
 ## Commands relacionados

@@ -177,6 +177,7 @@ Requisitos:
 |-----------|--------|----------|
 | [CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | `.cursor/` | Rules MDC, hooks, skills, MCP, agents, plans e checklist de maturidade |
 | [CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | `.claude/` | CLAUDE.md, settings, permissões, hooks, memória, subagents e roteiro de implantação |
+| [BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Stack real | Boas práticas de produção (segurança, API, Docker, testes) como instruções reutilizáveis |
 
 ### Mapa da documentação
 
@@ -192,6 +193,7 @@ Requisitos:
 | [docs/claude-vibe-coding-prompts.md](docs/claude-vibe-coding-prompts.md) | Prompts Claude: descoberta, codar, fechar |
 | [docs/CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | Guia longo da pasta `.cursor/` |
 | [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | Guia longo da pasta `.claude/` |
+| [docs/BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Práticas de produção importadas como instruções (não código) |
 | [.cursor/README.md](.cursor/README.md) | **Catálogo detalhado** de todos os artefatos Cursor |
 | [.claude/README.md](.claude/README.md) | **Catálogo detalhado** de todos os artefatos Claude |
 
@@ -213,7 +215,8 @@ Vibe-Coding/
 │   ├── cursor-vibe-coding-prompts.md
 │   ├── claude-vibe-coding-prompts.md
 │   ├── CURSOR_STRUCTURE_GUIDE.md
-│   └── CLAUDE_CODE_GUIDE.md
+│   ├── CLAUDE_CODE_GUIDE.md
+│   └── BEST_PRACTICES_FROM_PRODUCTION.md
 ├── .cursor/                       # Scaffold Cursor — ver .cursor/README.md
 │   ├── README.md
 │   ├── MODEL_SELECTION_GUIDE.md

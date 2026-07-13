@@ -3,22 +3,27 @@ description: Padrões de endpoint FastAPI — ativar ao editar routers da API de
 globs:
   - "src/routers/**/*.py"
   - "src/api/**/*.py"
+  - "backend/app/routers/**/*.py"
 alwaysApply: false
 ---
 
-> **Para que serve:** Regra glob ao editar routers da API fictícia Acme.
-> **Função:** Exigir `response_model`, auth, validação Pydantic e anti-padrões de endpoint cru.
+> **Para que serve:** Regra glob ao editar routers de APIs FastAPI.
+> **Função:** Exigir `response_model`, auth, validação Pydantic e padrões de segurança de produção.
 
-# Padrões de Endpoint (template)
+# Padrões de Endpoint (FastAPI)
 
 ## Estrutura
 - `response_model` explícito em toda rota
-- Auth: `Depends(get_current_user)` em rotas sensíveis
-- Validação: schemas Pydantic (`ItemCreate`, não `dict` cru)
+- Auth: `Depends(get_current_user)` em rotas sensíveis; aplique no `APIRouter` para fail-closed
+- Validação: schemas Pydantic no próprio router (`ItemCreate`, não `dict` cru)
+- Schemas Pydantic podem residir no arquivo do router para domínios simples
 
-## Exemplo
+## Exemplo — rota protegida
 
 ```python
+# Router com auth aplicada a todas as rotas (fail-closed)
+router = APIRouter(dependencies=[Depends(get_current_user)])
+
 @router.get("/", response_model=list[ItemResponse])
 async def list_items(
     page: int = Query(1, ge=1),
@@ -27,7 +32,35 @@ async def list_items(
     return await item_service.list_for_user(user.id, page=page)
 ```
 
+## Endpoint de autenticação
+
+```python
+# Rate limiting obrigatório em /auth/*
+@router.post("/login", response_model=TokenResponse)
+@limiter.limit("5/minute")
+async def login(request: Request, body: LoginRequest) -> TokenResponse:
+    user = await auth_service.authenticate(body.username, body.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")  # genérico
+    return await auth_service.create_session(user)
+```
+
+## Validação de startup (config.py)
+
+```python
+# Falha ruidosamente na inicialização — nunca inicia com config inválida
+@app.on_event("startup")
+async def validate_config():
+    if not settings.jwt_secret or settings.jwt_secret == "changeme":
+        raise RuntimeError("JWT_SECRET must be set to a secure value in production")
+    if settings.allowed_hosts == ["*"] and not settings.dev_mode:
+        raise RuntimeError("ALLOWED_HOSTS must not be wildcard in production")
+```
+
 ## Anti-padrões
 - ❌ Retornar documento ORM direto sem schema
 - ❌ `print()` para erros — usar logger do projeto
-- ❌ Endpoint admin sem checagem de role
+- ❌ Endpoint admin sem checagem de role (`Depends(get_current_admin)`)
+- ❌ Endpoint `/auth/*` sem rate limiting
+- ❌ OpenAPI habilitado em produção (`docs_url=None` fora de dev mode)
+- ❌ Mensagem de erro de auth revelando existência do usuário

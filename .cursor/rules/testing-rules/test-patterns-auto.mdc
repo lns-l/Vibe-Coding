@@ -2,36 +2,86 @@
 description: Padrões de testes — ativar ao editar arquivos de teste
 globs:
   - "tests/**/*.py"
+  - "backend/tests/**/*.py"
   - "**/*.test.ts"
   - "**/*.spec.ts"
 alwaysApply: false
 ---
 
 > **Para que serve:** Regra glob ao editar arquivos de teste Python/TS.
-> **Função:** Padronizar estrutura pytest/httpx, mocks e cobertura mínima esperada (template).
+> **Função:** Padronizar estrutura pytest/httpx, mocks de serviços externos e cobertura mínima esperada.
 
-# Padrões de Teste (template)
+# Padrões de Teste
 
 ## Estrutura
 - Arrange / Act / Assert explícitos
 - Nome do teste descreve cenário: `test_list_items_returns_401_when_unauthenticated`
 - Mock de serviços externos; sem rede real em CI
+- `pyproject.toml`: `asyncio_mode = "auto"` para testes assíncronos
 
-## Exemplo (Python)
+## Exemplo — httpx com ASGITransport (pytest)
 
 ```python
+# conftest.py — fixture compartilhada
+import pytest
+from httpx import AsyncClient, ASGITransport
+from app.main import app
+
+@pytest.fixture
+async def client():
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as c:
+        yield c
+
+# test_items.py
 async def test_create_item_returns_201(client, auth_headers):
-  payload = {"name": "Widget", "sku": "WDG-001"}
-  response = await client.post("/api/v1/items/", json=payload, headers=auth_headers)
-  assert response.status_code == 201
-  assert response.json()["data"]["name"] == "Widget"
+    response = await client.post(
+        "/api/items/", json={"name": "Widget", "sku": "WDG-001"}, headers=auth_headers
+    )
+    assert response.status_code == 201
+    assert response.json()["name"] == "Widget"
 ```
 
-## Cobertura mínima sugerida
-- Sucesso (200/201), 401, 403, 422 (validação)
+## Mock de LDAP / serviços externos
+
+```python
+# Mockar a camada de conexão, não a regra de negócio
+from unittest.mock import patch, MagicMock
+
+@patch("app.connectors.ldap.connector.ldap.initialize")
+async def test_ldap_search_escapes_input(mock_init, client):
+    mock_conn = MagicMock()
+    mock_init.return_value = mock_conn
+    mock_conn.search_s.return_value = [("cn=user,dc=corp,dc=com", {})]
+
+    response = await client.get("/api/users/search?q=john*doe")  # wildcard no input
+    assert response.status_code == 200
+    # Garantir que o filtro chegou sanitizado ao conector
+    called_filter = mock_conn.search_s.call_args[0][2]
+    assert "john\\2adoe" in called_filter  # * escapado como \2a (RFC 4515)
+```
+
+## Auth surface gate (cobertura de endpoints protegidos)
+
+```python
+# Percorre todos os routers e garante 401 sem autenticação
+async def test_protected_routes_return_401(client):
+    protected_prefixes = ["/api/users", "/api/admin", "/api/items"]
+    for prefix in protected_prefixes:
+        response = await client.get(f"{prefix}/")
+        assert response.status_code in (401, 403, 404), f"{prefix} deve ser protegido"
+```
+
+## Cobertura mínima por endpoint
+- Sucesso (200/201), 401 (sem auth), 403 (role inválida), 422 (validação)
 - Casos de erro de domínio relevantes
+- **Meta:** 70% por módulo novo; 50% como gate mínimo de CI
 
 ## Anti-padrões
 - ❌ Teste que depende de ordem de execução
 - ❌ Assert genérico (`assert response.ok`)
 - ❌ Credenciais ou tokens reais em fixtures
+- ❌ Conexão real com LDAP/banco em testes unitários — sempre mockar
+- ❌ `BACKEND_ALLOW_INSECURE_DEFAULTS` em produção (apenas em testes isolados)

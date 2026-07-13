@@ -14,8 +14,10 @@ alwaysApply: true
 
 ## Segurança
 - Nunca hardcode credenciais, tokens ou senhas
-- Usar variáveis de ambiente — nunca literais em código versionado
-- Não commitar `.env`, `mcp.env` ou arquivos com secrets
+- Usar `config.env` / `config.py` (pydantic-settings) — nunca literais em código versionado
+- Não commitar `.env`, `config.env`, `mcp.env` ou arquivos com secrets
+- Inputs LDAP/externos: sanitizar antes de usar em filtros ou queries
+- Rate limiting obrigatório em novos endpoints de autenticação
 
 ## Escopo
 - Ler o arquivo antes de editar
@@ -26,6 +28,7 @@ alwaysApply: true
 - Reutilizar padrões existentes no repositório
 - Commits: Conventional Commits
 - Branches: `feature/<nome>` ou `fix/<nome>`
+- Todo novo endpoint de API deve ter ao menos um teste cobrindo: sucesso, 401 e 422
 
 ## Git
 - Escopo: apenas o workspace atual
