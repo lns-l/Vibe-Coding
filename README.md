@@ -2,17 +2,28 @@
 
 # ⚡ Vibe Coding
 
-**Base de comparação e templates de governança para desenvolvimento assistido por IA**
+**Comparison base and governance templates for AI-assisted development**
 
 [![Cursor](https://img.shields.io/badge/Cursor-IDE-000000?style=for-the-badge&logo=cursor&logoColor=white)](https://cursor.com)
 [![Claude](https://img.shields.io/badge/Claude-Code-D97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://claude.ai)
 [![Markdown](https://img.shields.io/badge/Docs-Markdown-519ABA?style=for-the-badge&logo=markdown&logoColor=white)](https://github.com/lns-l/Vibe-Coding)
 
-*Dois scaffolds completos (`.cursor/` e `.claude/`), prompts, guias e constituição de projeto — prontos para copiar, comparar e adaptar no seu stack real.*
+*Two complete scaffolds (`.cursor/` and `.claude/`), prompts, guides, and project constitution — ready to copy, compare, and adapt to your real stack.*
 
-[Entregáveis principais](#-entregáveis-principais) · [Início rápido](#-início-rápido) · [Documentação](#-documentação) · [Estrutura](#-estrutura-do-repositório)
+[Main deliverables](#-entregáveis-principais) · [Quick start](#-início-rápido) · [Documentation](#-documentação) · [Structure](#-estrutura-do-repositório)
 
 </div>
+
+---
+
+> **Language / Idioma:** Canonical docs and agent-facing rules use **EN-US**. This README is still primarily **PT-BR** during migration. Policy: [docs/I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md)
+
+<details>
+<summary><strong>About (EN-US)</strong></summary>
+
+**Vibe Coding** is a template and comparison base for AI governance in real projects. It ships two versioned scaffolds (Cursor and Claude Code), long-form guides, fictional **Acme API** examples (Python/FastAPI + React), and *Purpose / Função* blocks across dozens of files for fast onboarding. AI structure **amplifies** human review — use this repo to compare approaches (rules vs `CLAUDE.md`, Python vs bash hooks, skills vs memory) before adopting them on your team.
+
+</details>
 
 ---
 
@@ -178,6 +189,7 @@ Requisitos:
 | [CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | `.cursor/` | Rules MDC, hooks, skills, MCP, agents, plans e checklist de maturidade |
 | [CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | `.claude/` | CLAUDE.md, settings, permissões, hooks, memória, subagents e roteiro de implantação |
 | [BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Stack real | Boas práticas de produção (segurança, API, Docker, testes) como instruções reutilizáveis |
+| [I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Governança | Política bilíngue: EN-US canônico, PT-BR secundário, convenção `.pt-BR.md` |
 
 ### Mapa da documentação
 
@@ -194,6 +206,7 @@ Requisitos:
 | [docs/CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | Guia longo da pasta `.cursor/` |
 | [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | Guia longo da pasta `.claude/` |
 | [docs/BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Práticas de produção importadas como instruções (não código) |
+| [docs/I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Fluxo bilíngue EN-US + PT-BR para docs e agentes |
 | [.cursor/README.md](.cursor/README.md) | **Catálogo detalhado** de todos os artefatos Cursor |
 | [.claude/README.md](.claude/README.md) | **Catálogo detalhado** de todos os artefatos Claude |
 
@@ -216,7 +229,8 @@ Vibe-Coding/
 │   ├── claude-vibe-coding-prompts.md
 │   ├── CURSOR_STRUCTURE_GUIDE.md
 │   ├── CLAUDE_CODE_GUIDE.md
-│   └── BEST_PRACTICES_FROM_PRODUCTION.md
+│   ├── BEST_PRACTICES_FROM_PRODUCTION.md
+│   └── I18N_WORKFLOW.md
 ├── .cursor/                       # Scaffold Cursor — ver .cursor/README.md
 │   ├── README.md
 │   ├── MODEL_SELECTION_GUIDE.md

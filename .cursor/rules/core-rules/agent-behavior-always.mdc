@@ -1,35 +1,38 @@
 ---
-description: Comportamento base obrigatório em todas as conversas (template Acme API)
+description: Base agent behavior for every conversation (Acme API template)
 alwaysApply: true
 ---
 
-> **Para que serve:** Regra global sempre aplicada em toda conversa do Cursor.
-> **Função:** Fixar idioma, segurança, escopo, padrões de commit e limites de edição (template).
+> **Purpose / Para que serve:** Global rule applied in every Cursor conversation.
+> **Function / Função:** Language policy, security, scope, commit conventions, and edit limits (template).
 
-# Comportamento do Agente
+# Agent Behavior
 
-## Idioma
-- Comunicação com o usuário: português brasileiro
-- Código, docstrings e commits: inglês
+## Language
 
-## Segurança
-- Nunca hardcode credenciais, tokens ou senhas
-- Usar `config.env` / `config.py` (pydantic-settings) — nunca literais em código versionado
-- Não commitar `.env`, `config.env`, `mcp.env` ou arquivos com secrets
-- Inputs LDAP/externos: sanitizar antes de usar em filtros ou queries
-- Rate limiting obrigatório em novos endpoints de autenticação
+- **Canonical docs & rules (this file, `docs/`, `CLAUDE.md`):** EN-US for new and updated content
+- **PT-BR:** Supported via `.pt-BR.md` translations — see [docs/I18N_WORKFLOW.md](../../docs/I18N_WORKFLOW.md)
+- **User communication:** Match the user's language (PT-BR or EN-US); if unclear, default to EN-US
+- **Code, docstrings, and commits:** English always
 
-## Escopo
-- Ler o arquivo antes de editar
-- Não ampliar escopo além do solicitado
-- Tarefas com 5+ arquivos: criar plano em `.cursor/plans/`
+## Security
+- Never hardcode credentials, tokens, or passwords
+- Use `config.env` / `config.py` (pydantic-settings) — no literals in versioned code
+- Do not commit `.env`, `config.env`, `mcp.env`, or files with real secrets
+- Sanitize LDAP/external inputs before filters or queries
+- Rate limiting required on new authentication endpoints
 
-## Padrões
-- Reutilizar padrões existentes no repositório
+## Scope
+- Read a file before editing it
+- Do not expand scope beyond what was requested
+- Tasks touching 5+ files: create a plan in `.cursor/plans/`
+
+## Standards
+- Reuse existing patterns in the repository
 - Commits: Conventional Commits
-- Branches: `feature/<nome>` ou `fix/<nome>`
-- Todo novo endpoint de API deve ter ao menos um teste cobrindo: sucesso, 401 e 422
+- Branches: `feature/<name>` or `fix/<name>`
+- Every new API endpoint needs at least one test covering success, 401, and 422
 
 ## Git
-- Escopo: apenas o workspace atual
-- Não force push em `main`/`master` sem confirmação explícita
+- Scope: current workspace only
+- No force push to `main`/`master` without explicit confirmation

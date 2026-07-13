@@ -10,6 +10,7 @@
 Changelog:
 - 2026-05-24: Template inicial para repositório Vibe-Coding (comparação Cursor vs Claude)
 - 2026-07-13: Padrões de produção importados de projeto FastAPI+LDAP/AD real (AD-WEB-V2)
+- 2026-07-13: i18n workflow — EN-US canonical docs; see docs/I18N_WORKFLOW.md
 -->
 
 ## Visão geral
@@ -173,6 +174,15 @@ export async function getUser(): Promise<any> {
 - MCP de banco apontando para produção
 - OpenAPI habilitado em produção (`docs_url=None` fora de dev mode)
 - Paralelizar subagents em fases que compartilham os arquivos críticos acima
+
+## Internationalization (i18n)
+
+- **Canonical language:** EN-US for governance docs, rules, and this file
+- **PT-BR:** Secondary — translations use the `.pt-BR.md` suffix (see workflow)
+- **Code, commits, docstrings:** English always
+- **User chat:** Agents match the user's language (PT-BR or EN-US)
+
+Full policy: [docs/I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md)
 
 ## Referências neste repo
 
