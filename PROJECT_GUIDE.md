@@ -25,7 +25,7 @@ Repositório **Vibe-Coding**: base de comparação entre governança de IA no Cu
 
 | Ferramenta | Configuração |
 |------------|----------------|
-| Cursor | [.cursor/](.cursor/) — rules, hooks, MCP, agents |
+| Cursor | [.cursor/](.cursor/) — rules, MCP, agents, commands |
 | Claude Code | [CLAUDE.md](CLAUDE.md) + [.claude/](.claude/) |
 
 ## Segurança (não negociável)
@@ -39,12 +39,13 @@ Repositório **Vibe-Coding**: base de comparação entre governança de IA no Cu
 | Arquivo | Função |
 |---------|--------|
 | [README.md](README.md) | Entrada do repo e mapa completo |
+| [docs/MULTIAGENT_ENGINEERING_LOOP.md](docs/MULTIAGENT_ENGINEERING_LOOP.md) · [PT-BR](docs/MULTIAGENT_ENGINEERING_LOOP.pt-BR.md) | Fluxo multiagente (papéis, gates, memória, loops) |
+| [docs/MULTIAGENT_LOOP_CHECKLIST.md](docs/MULTIAGENT_LOOP_CHECKLIST.md) | Checklist de uso + suíte `scripts/validate_multiagent_loop.py` |
 | [docs/I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Fluxo bilíngue: EN-US canônico, PT-BR secundário, convenção `.pt-BR.md` |
 | [docs/cursor-vibe-coding-prompts.md](docs/cursor-vibe-coding-prompts.md) | Prompts para Cursor |
 | [docs/claude-vibe-coding-prompts.md](docs/claude-vibe-coding-prompts.md) | Prompts para Claude |
 | [docs/CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | Guia detalhado `.cursor/` |
 | [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | Guia detalhado `.claude/` |
 | [docs/BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Boas práticas de produção (FastAPI + LDAP/AD) |
-| [docs/I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Política bilíngue EN-US (canônico) + PT-BR (secundário) |
 | [.cursor/README.md](.cursor/README.md) | Catálogo da estrutura Cursor |
 | [.claude/README.md](.claude/README.md) | Catálogo da estrutura Claude |

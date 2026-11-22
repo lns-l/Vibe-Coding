@@ -1,33 +1,47 @@
 ---
-description: Estrutura de planos multiagente em `.cursor/plans/` — usar ao criar ou editar `.plan.md`
+description: Structure of multi-agent plans in `.cursor/plans/` — use when creating or editing `.plan.md`
 globs:
   - ".cursor/plans/**/*.plan.md"
   - ".cursor/plans/**/*.md"
 alwaysApply: false
 ---
 
-> **Para que serve:** Regra agent para autorar planos `.plan.md` no Cursor.
-> **Função:** Definir frontmatter, seções obrigatórias e anti-padrões de paralelismo inseguro.
+> **Purpose:** Author `.plan.md` files for the multi-agent engineering loop.
+> **Função:** Frontmatter, seções obrigatórias, critério de aceite e anti-padrões de paralelismo.
 
-# Plan Architect (template)
+# Plan Architect
 
-## Frontmatter obrigatório
-- `name`, `overview`, `todos` (F1..FN + Encerramento), `isProject`
+Spec: `docs/MULTIAGENT_ENGINEERING_LOOP.md`
 
-## Seções obrigatórias
-1. **Contexto** — tabela com branch, objetivo, referências, arquivos críticos, validação
-2. **Diagrama de dependências** — Mermaid com arestas reais apenas
-3. **Convenções de execução** — idioma, credenciais, paralelo seguro
-4. **Modelos por fase** — tier mínimo suficiente (ver `MODEL_SELECTION_GUIDE.md`)
-5. **Fases F1..FN** — objetivo, arquivos, mudanças comportamentais, checklist
-6. **Encerramento** — critérios mensuráveis (comando que retorna 0)
+## Required frontmatter
+- `name`, `overview`, `todos` (F1..FN + closure), `isProject`
+- Optional: `correlationId`, `riskClass` (`read` | `reversible` | `irreversible`)
 
-## Regras de escrita
-- Mudanças descrevem **comportamento**, não snippets de implementação
-- Máximo 8 fases; cada fase ≤ 25 linhas no arquivo
-- Paralelo só com arquivos disjuntos (ver `PARALLEL_AGENTS.md`)
+## Required sections
+1. **Context** — branch, objective, references, critical files, final validation command
+2. **Dependency diagram** — Mermaid with real edges only
+3. **Execution conventions** — language, credentials, safe parallelism, human gates
+4. **Models per phase** — minimum sufficient tier (`MODEL_SELECTION_GUIDE.md`)
+5. **Phases F1..FN** — each must include:
+   - Objective
+   - Inputs
+   - Output format
+   - **Verifiable acceptance criteria**
+   - Files (disjoint within a parallel batch)
+   - Behavioral changes (not implementation snippets)
+   - Risk / `requires_human_approval` when needed
+   - Dependencies
+6. **Closure** — measurable criteria (command exit 0)
 
-## Anti-padrões
-- ❌ Plano sem discovery (contexto com suposições)
-- ❌ Fases paralelas com interseção de arquivos
-- ❌ Encerramento sem comando de validação
+## Writing rules
+- No phase starts without acceptance criteria
+- Max 8 phases; each phase ≤ 25 lines in the file
+- Parallel only with disjoint files (`PARALLEL_AGENTS.md`)
+- Who executes does not review — closure validation is separate from implementer self-check
+
+## Anti-patterns
+- ❌ Plan without discovery (assumed context)
+- ❌ Parallel phases with file intersection
+- ❌ Closure without validation command
+- ❌ Phase without verifiable acceptance criteria
+- ❌ Irreversible step without rollback or human approval flag

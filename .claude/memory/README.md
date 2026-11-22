@@ -1,20 +1,39 @@
 # Memory (Claude Code)
 
-> **Para que serve:** Guia da memória persistente entre sessões do Claude Code.
-> **Função:** Explicar estrutura em `~/.claude/projects/.../memory/` e apontar para exemplos locais.
+> **Purpose:** Session memory guide plus multi-agent work/durable/log layers.
+> **Função:** Explicar memória Claude Code e as camadas do loop multiagente.
 
-Persistência real entre sessões fica em:
+Canonical loop: [docs/MULTIAGENT_ENGINEERING_LOOP.md](../../docs/MULTIAGENT_ENGINEERING_LOOP.md) §6.
+
+## Multi-agent layers (this repo)
 
 ```
-~/.claude/projects/<nome-do-projeto>/memory/
-├── MEMORY.md          # Índice (carregado em toda sessão, < 200 linhas)
+.claude/memory/
+├── work/<correlation-id>/<role>/   # Per-run drafts — each role own folder
+├── durable/                        # Validated facts — orchestrator ONLY (examples)
+├── log/                            # Append-only audit examples
+├── examples/                       # Sample MEMORY.md fragments
+└── README.md
+```
+
+- Correlation ID: `run-<YYYYMMDD>-<short-hash>`
+- No secrets/PII in any layer
+- Only the orchestrator promotes into durable / project MEMORY
+
+## Persistent Claude Code memory (runtime)
+
+Real cross-session persistence lives in:
+
+```
+~/.claude/projects/<project-name>/memory/
+├── MEMORY.md          # Index (loaded every session, < 200 lines)
 ├── user-*.md          # type: user
 ├── feedback-*.md      # type: feedback
 ├── project-*.md       # type: project
 └── ref-*.md           # type: reference
 ```
 
-Esta pasta contém apenas **exemplos** para copiar/adaptar localmente.  
-Não commitar PII, credenciais ou dados de produção.
+This folder holds **examples** to copy locally.  
+Do not commit PII, credentials, or production data.
 
-Ver `docs/CLAUDE_CODE_GUIDE.md` §8 e exemplos em `examples/`.
+See `docs/CLAUDE_CODE_GUIDE.md` §8 and `examples/`.

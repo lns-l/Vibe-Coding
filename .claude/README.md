@@ -1,7 +1,7 @@
 # `.claude/` — Scaffold Vibe-Coding
 
 > **Para que serve:** Template de governança Claude Code para comparação com Cursor.
-> **Função:** Centralizar settings, hooks, commands, subagents, plans e exemplos de memória — sem secrets no git.
+> **Função:** Centralizar settings, commands, subagents, plans e exemplos de memória — sem secrets no git.
 
 Template de governança Claude Code para comparação com Cursor. Sem credenciais reais.
 
@@ -17,21 +17,24 @@ Guia completo: [docs/CLAUDE_CODE_GUIDE.md](../docs/CLAUDE_CODE_GUIDE.md)
 |-----------------|----------------|--------|
 | **Raiz** | | |
 | `README.md` | Este índice | Listar propósito de cada artefato em `.claude/` |
-| `settings.json` | Config versionada | Permissões, hooks, MCP, modelo e env de exemplo |
+| `settings.json` | Config versionada | Permissões, MCP, modelo e env de exemplo |
 | `settings.local.json.example` | Overrides locais | Copiar → `settings.local.json` (gitignored) |
-| **hooks/** | Automação bash | Scripts chamados por `settings.json` |
-| `hooks/pre-tool-bash.sh` | Pré Bash | Bloquear padrões de shell perigosos |
-| `hooks/post-tool-edit.sh` | Pós edição | Qualidade após Edit/Write (template) |
-| `hooks/session-start.sh` | Início de sessão | Tarefas leves no startup |
 | **commands/** | Slash commands | Fluxos invocados com `/nome` |
-| `commands/review.md` | `/review` | Revisão de qualidade e segurança |
+| `commands/review.md` | `/review` | Revisor independente (aceite + evidência) |
 | `commands/pr.md` | `/pr` | Criar pull request |
-| `commands/plano.md` | `/plano` | Gerar plano em `.claude/plans/` |
-| `commands/multiagent.md` | `/multiagent` | Executar plano por fases |
+| `commands/plano.md` | `/plano` | Planejador: plano com critério de aceite |
+| `commands/multiagent.md` | `/multiagent` | Orquestrador: loop intake → entrega |
 | `commands/security-check.md` | `/security-check` | Checagem rápida de segurança |
 | `commands/api/health-check.md` | `/api.health-check` | Validar rota de health da API fictícia |
 | `commands/deploy/staging.md` | `/deploy.staging` | Fluxo de deploy staging (template) |
 | **agents/** | Subagents | Especialistas com escopo restrito |
+| `agents/intake.md` | Entrada | Briefing e escopo fechado |
+| `agents/orchestrator.md` | Orquestrador | Risco, delegação, memória durável |
+| `agents/planner.md` | Planejador | Tarefas com aceite |
+| `agents/architect.md` | Arquiteto | Desenho, riscos, rollback |
+| `agents/engineer.md` | Engenheiro | Artefatos isolados |
+| `agents/executor.md` | Executor | Execução + evidências |
+| `agents/reviewer.md` | Revisor | Parecer independente |
 | `agents/new-feature.md` | Nova feature | Backend, testes e frontend de entidade |
 | `agents/security-audit.md` | Auditoria | Auth, inputs, credenciais e privacidade |
 | **plans/** | Planos `.plan.md` | Saída do `/plano` e execução multiagente |
@@ -39,8 +42,8 @@ Guia completo: [docs/CLAUDE_CODE_GUIDE.md](../docs/CLAUDE_CODE_GUIDE.md)
 | `plans/example-feature_a1b2c3d4.plan.md` | Exemplo webhooks | Plano fictício com diagrama Mermaid |
 | `plans/archive/README.md` | Archive | Preservar planos concluídos ou cancelados |
 | `plans/.gitkeep` | Placeholder | Manter pasta `plans/` no git |
-| **memory/** | Exemplos de memória | Copiar para `~/.claude/projects/.../memory/` |
-| `memory/README.md` | Guia memória | Estrutura MEMORY.md e tipos de arquivo |
+| **memory/** | Memória + exemplos | work/durable/log + templates MEMORY |
+| `memory/README.md` | Guia memória | Camadas do loop + MEMORY.md Claude |
 | `memory/examples/MEMORY.md` | Índice exemplo | Ponteiros para outros arquivos de memória |
 | `memory/examples/user-role.md` | Perfil usuário | Papel e preferências do dev |
 | `memory/examples/feedback-testing.md` | Feedback testes | Preferências de mock e integração |

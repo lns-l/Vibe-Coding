@@ -18,7 +18,7 @@ O grafo de dependências ficará em `docs/graph/` (placeholder).
 ## Como usar
 1. Ler relatório de arquitetura gerado pelo grafo
 2. Preferir wiki navegável a raw files quando existir
-3. Após mudanças estruturais: atualizar grafo (hook `update-graph-on-session.py`)
+3. Após mudanças estruturais: atualizar grafo manualmente (este template não usa session hooks)
 
 ## Quando não usar
 - Arquivo específico já aberto no editor

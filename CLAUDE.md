@@ -11,11 +11,24 @@ Changelog:
 - 2026-05-24: Template inicial para repositório Vibe-Coding (comparação Cursor vs Claude)
 - 2026-07-13: Padrões de produção importados de projeto FastAPI+LDAP/AD real (AD-WEB-V2)
 - 2026-07-13: i18n workflow — EN-US canonical docs; see docs/I18N_WORKFLOW.md
+- 2026-11-22: Multi-agent engineering loop — roles, memory layers, /multiagent orchestrator
+- 2026-11-22: Model orchestration — catalog, cost/demand assign, escalate + re-dispatch
 -->
 
 ## Visão geral
 
 API REST fictícia **Acme API** (Python/FastAPI + TypeScript/React). Domínio de exemplo: catálogo de itens e integrações webhook. Sem dados reais ou credenciais neste repositório.
+
+## Multi-agent engineering loop
+
+Complex work follows [docs/MULTIAGENT_ENGINEERING_LOOP.md](docs/MULTIAGENT_ENGINEERING_LOOP.md):
+
+- Roles: intake → orchestrator → planner → architect → engineer → executor → reviewer (+ human gates)
+- Principles: who executes does not review; only orchestrator writes durable memory; fail closed; acceptance before execute
+- Entry: `/multiagent` · plan: `/plano` · review: `/review`
+- Models: orchestrator refreshes `.cursor/models/catalog.yaml`, assigns cheapest adequate slug per role, escalates on `MODEL_INSUFFICIENT` (see `.cursor/MODEL_SELECTION_GUIDE.md`)
+- Memory: `.claude/memory/work|durable|log/` (orchestrator-only durable promote)
+- Validate scaffold: `python scripts/validate_multiagent_loop.py`
 
 ## Arquitetura (exemplo)
 
@@ -52,6 +65,7 @@ Projetos reais usam `backend/config.env` (git-ignored) lido por `config.py` via 
 - Testes: `pytest tests/ -x` / `npm test`
 - Lint: `npm run lint` / `ruff check src`
 - Validação completa: `./scripts/validate.sh` (criar no seu projeto)
+- Scaffold do loop multiagente: `python scripts/validate_multiagent_loop.py` ou `powershell -File scripts/validate_multiagent_loop.ps1`
 
 ## Padrões de código (few-shot)
 
