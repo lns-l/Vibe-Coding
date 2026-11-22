@@ -272,8 +272,8 @@ export const createItem = async (req, res) => {
   "mcpServers": {
     "github": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_TOKEN", "ghcr.io/github/github-mcp-server"],
       "env": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       }
@@ -674,8 +674,8 @@ O Model Context Protocol conecta o Claude Code a sistemas externos — bancos de
   "mcpServers": {
     "github": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_TOKEN", "ghcr.io/github/github-mcp-server"],
       "env": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       }

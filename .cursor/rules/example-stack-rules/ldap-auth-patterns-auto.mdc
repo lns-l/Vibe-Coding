@@ -1,0 +1,107 @@
+---
+description: Padrões de LDAP/AD e autenticação — ativar ao editar connectors, auth e routers de acesso
+globs:
+  - "backend/app/connectors/**/*.py"
+  - "backend/app/auth/**/*.py"
+  - "src/connectors/**/*.py"
+  - "src/auth/**/*.py"
+alwaysApply: false
+---
+
+> **Para que serve:** Regra glob para conectores LDAP/Active Directory e camada de autenticação.
+> **Função:** Garantir sanitização de inputs LDAP, TLS obrigatório, JWT seguro e proteção contra enumeração.
+
+# Padrões LDAP / Auth
+
+## Conexão LDAP
+
+- **Produção:** usar `ldaps://` (LDAP sobre SSL) ou `ldap://` + STARTTLS — nunca plaintext
+- Logar aviso explícito se `ssl_verify=False` for necessário (risco assumido documentado)
+- Desconectar (`unbind`) em `finally` para liberar conexões do pool
+
+```python
+# ✅ Correto — TLS + unbind garantido
+conn = ldap.initialize("ldaps://ad.corp.com")
+conn.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+conn.simple_bind_s(bind_dn, bind_password)
+try:
+    results = conn.search_s(base_dn, ldap.SCOPE_SUBTREE, ldap_filter)
+finally:
+    conn.unbind_s()
+```
+
+## Sanitização de filtros LDAP (obrigatório)
+
+Inputs de usuário **nunca** devem ser interpolados diretamente em filtros LDAP.
+Implementar `escape_ldap_filter_value` baseado no RFC 4515:
+
+```python
+# ✅ Correto — escape antes de montar filtro
+safe_username = escape_ldap_filter_value(username)
+ldap_filter = f"(&(objectClass=user)(sAMAccountName={safe_username}))"
+
+# ❌ Errado — LDAP injection
+ldap_filter = f"(sAMAccountName={username})"
+```
+
+Caracteres que devem ser escapados: `\`, `*`, `(`, `)`, `\x00`
+
+## JWT
+
+- Armazenar em cookie `httpOnly` com `Secure` e `SameSite=Lax` — nunca `localStorage`
+- Frontend: `withCredentials: true` no cliente HTTP
+- Backend: retornar JWT via `Set-Cookie` na resposta de login
+- Definir TTL curto para access token; refresh token com rotação
+- Segredo JWT: mínimo 32 bytes aleatórios; validar no startup (falha ruidosa se placeholder)
+
+```python
+# ✅ Correto — cookie httpOnly, sem token no body de login
+response.set_cookie(
+    key="access_token",
+    value=jwt_token,
+    httponly=True,
+    secure=True,      # HTTPS only
+    samesite="lax",
+    max_age=3600,
+)
+```
+
+## Rate limiting em auth
+
+```python
+# Aplicar em TODOS os endpoints /auth/*
+@router.post("/login")
+@limiter.limit("5/minute")      # por IP
+async def login(request: Request, body: LoginRequest): ...
+
+@router.post("/forgot-password")
+@limiter.limit("3/minute")
+async def forgot_password(request: Request, body: ForgotPasswordRequest): ...
+```
+
+## Anti-enumeração
+
+- Mensagens de erro genéricas: `"Invalid credentials"` — nunca `"User not found"` ou `"Wrong password"`
+- Hash dummy para usuário inexistente (timing constante via bcrypt) — evitar timing attacks
+- Não revelar se um e-mail/username existe em endpoints de reset de senha
+
+## Dependencies de role
+
+```python
+# Hierarquia de roles como dependencies do FastAPI
+get_current_user   = Depends(verify_jwt)        # qualquer usuário autenticado
+get_current_admin  = Depends(require_role("admin"))
+get_current_master = Depends(require_role("master"))
+
+# Aplicar no router para fail-closed
+router = APIRouter(dependencies=[Depends(get_current_user)])
+```
+
+## Anti-padrões
+- ❌ LDAP plaintext (`ldap://`) em produção sem STARTTLS
+- ❌ Bind DN / senha LDAP hardcoded — usar `config.env`
+- ❌ Input do usuário em filtro LDAP sem escape
+- ❌ JWT em `localStorage` ou `sessionStorage`
+- ❌ Segredo JWT com valor padrão (`"secret"`, `"changeme"`)
+- ❌ Endpoint admin sem verificação de role explícita
+- ❌ OpenAPI (`/docs`) habilitado em produção

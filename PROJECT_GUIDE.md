@@ -17,6 +17,9 @@ Repositório **Vibe-Coding**: base de comparação entre governança de IA no Cu
 | API | Python 3.12, FastAPI |
 | Frontend | TypeScript, React |
 | Dados | PostgreSQL (dev only) |
+| Auth | JWT em cookie httpOnly, bcrypt |
+| Diretório (opcional) | LDAP / Active Directory via python-ldap |
+| Config | `config.env` + `config.py` (pydantic-settings) |
 
 ## Onde configurar cada ferramenta
 
@@ -36,9 +39,12 @@ Repositório **Vibe-Coding**: base de comparação entre governança de IA no Cu
 | Arquivo | Função |
 |---------|--------|
 | [README.md](README.md) | Entrada do repo e mapa completo |
+| [docs/I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Fluxo bilíngue: EN-US canônico, PT-BR secundário, convenção `.pt-BR.md` |
 | [docs/cursor-vibe-coding-prompts.md](docs/cursor-vibe-coding-prompts.md) | Prompts para Cursor |
 | [docs/claude-vibe-coding-prompts.md](docs/claude-vibe-coding-prompts.md) | Prompts para Claude |
 | [docs/CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | Guia detalhado `.cursor/` |
 | [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | Guia detalhado `.claude/` |
+| [docs/BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Boas práticas de produção (FastAPI + LDAP/AD) |
+| [docs/I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Política bilíngue EN-US (canônico) + PT-BR (secundário) |
 | [.cursor/README.md](.cursor/README.md) | Catálogo da estrutura Cursor |
 | [.claude/README.md](.claude/README.md) | Catálogo da estrutura Claude |

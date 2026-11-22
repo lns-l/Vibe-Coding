@@ -1832,6 +1832,12 @@ Exemplos comuns:
 - [ ] Ordem de merge após paralelo está clara?
 ```
 
+### 13.3 Internationalization (i18n)
+
+Governance docs and agent-facing rules default to **EN-US**. PT-BR translations use the `.pt-BR.md` suffix next to the canonical file. Agents reply in the user's language; code and commits stay English.
+
+→ Full policy: [docs/I18N_WORKFLOW.md](../../docs/I18N_WORKFLOW.md) (repo root)
+
 ---
 
 ## 14. Seleção de Modelos
