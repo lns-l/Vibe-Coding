@@ -1,30 +1,39 @@
 # /review
 
-> **Para que serve:** Slash command de revisão pré-commit no Cursor.
-> **Função:** Rodar lint, segurança e checklist de qualidade sobre o diff atual (template).
+> **Purpose:** Independent reviewer against acceptance criteria (deterministic first).
+> **Função:** Papel revisor do loop — saída + critério, sem raciocínio do executor.
 
-Revisa mudanças não commitadas com verificações de qualidade do projeto (template).
+Acts as `@reviewer` for the multi-agent loop. Spec: [docs/MULTIAGENT_ENGINEERING_LOOP.md](../../docs/MULTIAGENT_ENGINEERING_LOOP.md) §4.7.
 
-## Fluxo
+## Inputs (only)
+- Acceptance criteria (from plan/briefing)
+- Diff / executor output + evidence
+- Do **not** treat executor rationale as proof of done
 
-### Linters e formatação
-1. Executar linter(s) configurados
-2. Verificar formatação e imports não utilizados
+## Flow
 
-### Segurança
-1. Credenciais hardcoded no diff?
-2. Inputs externos validados?
-3. Rotas sensíveis protegidas?
-4. Arquivos sensíveis staged?
+### 1 — Deterministic
+1. Run configured linter(s) / tests / validation commands when applicable
+2. Check required files/artifacts exist
+3. Credentials hardcoded? Sensitive files staged?
 
-### Consistência
-1. Tipos/schemas alinhados com existentes?
-2. Naming conforme convenções?
-3. Testes para casos novos?
+### 2 — Security / consistency
+1. External inputs validated?
+2. Sensitive routes protected?
+3. Types/schemas aligned? Naming OK? Tests for new cases?
 
-## Saída
-Sumário por categoria: ✅ OK / ⚠️ Atenção / ❌ Crítico
+### 3 — Verdict
+Write `.cursor/memory/work/<correlation-id>/reviewer/verdict.md` when a run ID exists:
 
-## Regras
-- Não corrigir automaticamente — aguardar aprovação
-- Se linter falhar: exibir output completo
+```text
+VERDICT: APPROVE | REJECT
+Reasons:
+- ...
+Evidence checked:
+- ...
+```
+
+## Rules
+- Who executes does not review — if you just implemented the change in this turn, spawn/hand off to a fresh reviewer pass or stop and ask human
+- Do not auto-fix unless user asks after APPROVE path via orchestrator
+- Fail closed on doubt → REJECT or escalate

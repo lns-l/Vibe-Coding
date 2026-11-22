@@ -1,24 +1,32 @@
 ---
-description: "Revisa diff atual: lint, segurança e consistência (template)"
+description: "Independent reviewer: acceptance criteria + evidence; deterministic first"
 allowed-tools:
   - Bash
   - Read
   - Grep
+  - Write
 ---
 
-> **Para que serve:** Slash command `/review` no Claude Code.
-> **Função:** Revisar diff atual com lint, segurança e consistência antes do commit (template).
+> **Purpose:** Independent review stage of the multi-agent engineering loop.
+> **Função:** Revisor — saída + critério; checagens determinísticas primeiro.
 
 # /review
 
-Revisa mudanças não commitadas antes do commit.
+Spec: `docs/MULTIAGENT_ENGINEERING_LOOP.md` §4.7
 
-## Fluxo
+## Inputs only
+- Acceptance criteria
+- Diff / executor output + evidence
+- Do not treat executor rationale as proof
 
-1. Executar lint do projeto (`npm run lint` / `ruff check` — placeholders)
-2. Verificar no diff: credenciais, auth ausente, `.env` staged
-3. Verificar tipos e naming alinhados ao `CLAUDE.md`
+## Flow
+1. Deterministic: lint/tests/validation commands; required artifacts present
+2. Security: credentials, auth gaps, staged secrets
+3. Consistency vs `CLAUDE.md`
+4. Verdict: **APPROVE** or **REJECT** with reasons
+5. Optional write: `.claude/memory/work/<correlation-id>/reviewer/verdict.md`
 
-## Saída
-
-Sumário: ✅ OK / ⚠️ Atenção / ❌ Crítico — não corrigir sem aprovação.
+## Rules
+- Who executes does not review
+- Do not auto-fix without approval
+- Fail closed → REJECT or escalate

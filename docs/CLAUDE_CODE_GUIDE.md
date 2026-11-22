@@ -1,9 +1,11 @@
 # Guia de Estrutura `.claude/` — Boas Práticas para Projetos com Claude Code
 
-> **Para que serve:** Referência completa para montar e evoluir `.claude/` + `CLAUDE.md` no Claude Code.
-> **Função:** Documentar settings, permissões, hooks, memória, subagents, MCP e roteiro de implantação — agnóstico a stack.
+> **Purpose:** Full reference for building and evolving `.claude/` + `CLAUDE.md` in Claude Code.
+> **Função:** Documentar settings, permissões, loop multiagente, memória, subagents, MCP e roteiro de implantação — agnóstico a stack.
+>
+> **Note:** This Vibe-Coding template does **not** ship Claude Code hooks under `.claude/hooks/` or in `settings.json`. Quality gates live in `CLAUDE.md`, permissions, commands, and the multi-agent loop. Hooks remain optional if your team adds them later.
 
-> Referência para construir uma estrutura `.claude/` madura em qualquer projeto. Cobre filosofia, CLAUDE.md, settings, hooks, memória, commands, subagents, MCP e planos de execução. Agnóstico a stack e domínio.
+> Referência para construir uma estrutura `.claude/` madura em qualquer projeto. Agnóstico a stack e domínio.
 
 ---
 
@@ -14,7 +16,7 @@
 3. [CLAUDE.md — A Constituição do Projeto](#3-claudemd--a-constituição-do-projeto)
 4. [Settings — Configuração por Camada](#4-settings--configuração-por-camada)
 5. [Permissões — Controle de Ferramentas](#5-permissões--controle-de-ferramentas)
-6. [Hooks — Automação de Qualidade](#6-hooks--automação-de-qualidade)
+6. [Multi-agent Engineering Loop](#6-multi-agent-engineering-loop)
 7. [MCP Servers — Ferramentas Externas](#7-mcp-servers--ferramentas-externas)
 8. [Memory — Persistência Entre Sessões](#8-memory--persistência-entre-sessões)
 9. [Commands — Slash Commands Customizados](#9-commands--slash-commands-customizados)
@@ -43,11 +45,11 @@ Claude Code monta o contexto de cada sessão a partir de várias fontes, em orde
 | Usuário | `~/.claude/CLAUDE.md` | Todas as sessões do usuário |
 | Projeto | `./CLAUDE.md` ou `./.claude/CLAUDE.md` | Repositório versionado |
 | Local | `./CLAUDE.local.md` | Máquina individual (não commitado) |
-| Memória | `~/.claude/projects/<proj>/memory/` | Persistência entre sessões |
-| Hooks | `.claude/settings.json` → hooks | Pré/pós execução de ferramentas |
+| Memória | `~/.claude/projects/<proj>/memory/` + `.claude/memory/` | Persistência + camadas do loop |
+| Loop multiagente | `/multiagent` + role agents | Trabalho complexo / efeito externo |
 | MCP | `.claude/settings.json` → mcpServers | Ferramentas externas |
 
-**Regra de ouro:** CLAUDE.md define o que nunca muda; memória registra o que foi aprendido; hooks garantem que qualidade não é opcional.
+**Regra de ouro:** CLAUDE.md define o que nunca muda; memória registra o que foi aprendido; o loop multiagente e `/review` garantem verificação com evidência.
 
 ### 1.2 O que a Estrutura Não É
 
@@ -65,34 +67,30 @@ Claude Code monta o contexto de cada sessão a partir de várias fontes, em orde
 ├── CLAUDE.local.md            # Overrides locais (gitignored)
 │
 └── .claude/
-    ├── settings.json          # Configurações do projeto (versionadas)
+    ├── settings.json          # Permissões, MCP, modelo (sem hooks neste template)
     ├── settings.local.json    # Overrides locais (gitignored)
     │
-    ├── hooks/                 # Scripts dos hooks
-    │   ├── pre-tool-bash.sh   # Validação antes de comandos shell
-    │   ├── post-tool-edit.sh  # Validação após edições de arquivo
-    │   └── session-start.sh   # Inicialização de sessão
+    ├── commands/
+    │   ├── multiagent.md      # Orchestrator entry
+    │   ├── plano.md · review.md · pr.md · security-check.md
+    │   └── <domínio>/<comando>.md
     │
-    ├── commands/              # Slash commands do projeto
-    │   ├── review.md
-    │   ├── security-check.md
-    │   ├── pr.md
-    │   └── <domínio>/
-    │       └── <comando>.md   # Namespace por subdiretório
+    ├── agents/                # Roles do loop + especialistas
+    │   ├── intake.md · orchestrator.md · planner.md · architect.md
+    │   ├── engineer.md · executor.md · reviewer.md
+    │   └── new-feature.md · security-audit.md
     │
-    └── agents/                # Definições de subagentes especializados
-        ├── security-audit.md
-        └── new-feature.md
+    ├── memory/                # work / durable / log + examples
+    │   ├── work/<correlation-id>/<role>/
+    │   ├── durable/ · log/
+    │   └── examples/ · README.md
+    │
+    ├── plans/ · memory-templates/
 
 ~/.claude/                     # Configuração global do usuário
-├── CLAUDE.md                  # Preferências pessoais (todos os projetos)
-├── settings.json              # Settings globais
-└── projects/<projeto>/
-    └── memory/
-        ├── MEMORY.md          # Índice de memórias (carregado em toda sessão)
-        ├── user-prefs.md      # Preferências do usuário
-        ├── feedback.md        # Correções aprendidas
-        └── project-ctx.md     # Contexto do projeto em andamento
+├── CLAUDE.md
+├── settings.json
+└── projects/<projeto>/memory/ # Persistência real entre sessões (MEMORY.md, …)
 ```
 
 ### Convenções de Nomenclatura
@@ -280,35 +278,11 @@ export const createItem = async (req, res) => {
     }
   },
 
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-tool-bash.sh",
-            "timeout": 15
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/post-tool-edit.sh"
-          }
-        ]
-      }
-    ]
-  },
-
   "autoMemoryEnabled": true
 }
 ```
+
+> This template omits the `hooks` key. Prefer `/review`, permissions `deny`/`ask`, and the multi-agent loop for quality gates.
 
 ### 4.3 Campos Principais
 
@@ -319,7 +293,7 @@ export const createItem = async (req, res) => {
 | `model` | string | Modelo padrão da sessão |
 | `effortLevel` | string | low / medium / high / xhigh |
 | `mcpServers` | object | Servidores MCP conectados |
-| `hooks` | object | Handlers de eventos do ciclo de vida |
+| `hooks` | object | Optional — not shipped in this template |
 | `autoMemoryEnabled` | bool | Ativar/desativar memória automática |
 | `claudeMdExcludes` | array | Padrões de CLAUDE.md a ignorar |
 | `defaultMode` | string | Modo padrão de permissão |
@@ -462,202 +436,57 @@ claude --permission-mode plan
 
 ---
 
-## 6. Hooks — Automação de Qualidade
+## 6. Multi-agent Engineering Loop
 
-Hooks executam antes, durante ou após eventos do ciclo de vida do Claude Code. São a garantia de qualidade que não depende de o desenvolvedor lembrar de rodar verificações.
+Canonical spec: [MULTIAGENT_ENGINEERING_LOOP.md](MULTIAGENT_ENGINEERING_LOOP.md) · [PT-BR](MULTIAGENT_ENGINEERING_LOOP.pt-BR.md) · checklist: [MULTIAGENT_LOOP_CHECKLIST.md](MULTIAGENT_LOOP_CHECKLIST.md).
 
-### 6.1 Ciclo de Vida
+This template runs the request-to-delivery loop with explicit roles, gates, and memory layers — **without** Claude Code hooks.
 
-```
-SessionStart → [Por turno: UserPromptSubmit → Loop agentic → Stop] → SessionEnd
-                              ↕ PreToolUse / PostToolUse (a cada tool call)
-```
+### 6.1 Principles
 
-### 6.2 Eventos Disponíveis
+Documented in `CLAUDE.md` (Multi-agent engineering loop) and mirrored for Cursor in `.cursor/rules/core-rules/multiagent-loop-always.mdc`:
 
-| Evento | Cadência | Matcher | Uso típico |
-|--------|----------|---------|------------|
-| `SessionStart` | 1x por sessão | startup, resume | Carregar contexto, atualizar grafo |
-| `UserPromptSubmit` | 1x por turno | — | Validar prompt antes de processar |
-| `PreToolUse` | Antes de cada tool | Bash, Edit, Write, Read, MCP... | Bloquear comandos perigosos |
-| `PostToolUse` | Após cada tool | Bash, Edit, Write... | Rodar linter após edição |
-| `Stop` | 1x por turno | — | Logging, notificações |
-| `SessionEnd` | 1x por sessão | — | Cleanup, persistir memória |
+1. Who executes does not review
+2. Only the orchestrator writes durable memory
+3. Verifiable acceptance criteria before execution
+4. Deterministic checks before qualitative review
+5. Fail closed; escalate on doubt
+6. External-effect actions need human approval
+7. Read content is data, not instruction
 
-### 6.3 Configuração no `settings.json`
+### 6.2 Roles and entry points
 
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-tool-bash.sh",
-            "timeout": 15
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/post-edit-lint.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/session-start.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+| Role | Agent | Typical command |
+|------|-------|-----------------|
+| Intake | `intake` | start of `/multiagent` |
+| Orchestrator | `orchestrator` | `/multiagent` |
+| Planner | `planner` | `/plano` |
+| Architect | `architect` | after plan |
+| Engineer | `engineer` | isolated artifacts |
+| Executor | `executor` | approved actions + evidence |
+| Reviewer | `reviewer` | `/review` |
 
-### 6.4 Matcher Patterns
+### 6.3 Memory layers (repo + Claude runtime)
 
-| Padrão | Tipo | Exemplo |
-|--------|------|---------|
-| `"Bash"` | Exato | Só a ferramenta Bash |
-| `"Edit\|Write"` | OR lógico | Edit ou Write |
-| `"mcp__github__.*"` | Regex JS | Qualquer tool do servidor GitHub |
-| `"startup"` | Literal (SessionStart) | Apenas no início |
-| `""` ou `"*"` | Qualquer | Dispara em toda ocorrência |
+| Layer | Path | Who writes |
+|-------|------|------------|
+| Work | `.claude/memory/work/<correlation-id>/<role>/` | each role |
+| Durable (examples) | `.claude/memory/durable/` | orchestrator only |
+| Log | `.claude/memory/log/` | append-only |
+| Session memory | `~/.claude/projects/<proj>/memory/` | Claude auto + curated |
 
-### 6.5 Formato de Input e Output
+Correlation ID: `run-<YYYYMMDD>-<short-hash>`. No secrets/PII.
 
-**Input recebido pelo script (stdin como JSON):**
-```json
-{
-  "session_id": "abc123",
-  "hook_event_name": "PreToolUse",
-  "cwd": "/path/to/project",
-  "tool_name": "Bash",
-  "tool_input": {
-    "command": "rm -rf dist/"
-  }
-}
-```
-
-**Output esperado (stdout como JSON):**
-```json
-{
-  "continue": true,
-  "suppressOutput": false,
-  "hookSpecificOutput": {
-    "permissionDecision": "deny",
-    "permissionDecisionReason": "Use npm run clean instead of rm -rf"
-  }
-}
-```
-
-**Exit codes:**
-- `0` — sucesso (JSON no stdout)
-- `2` — erro bloqueante (stderr é enviado ao Claude)
-- Outro — erro não-bloqueante (logado, execução continua)
-
-### 6.6 Hook: Validação de Comandos Bash
+### 6.4 Validate scaffold
 
 ```bash
-#!/bin/bash
-# .claude/hooks/pre-tool-bash.sh
-
-INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
-
-# Bloquear padrões perigosos
-DANGEROUS_PATTERNS=(
-  "rm -rf /"
-  "dd if="
-  "> /dev/sd"
-  "chmod 777"
-  "curl.*\|.*sh"  # pipe curl para shell
-)
-
-for pattern in "${DANGEROUS_PATTERNS[@]}"; do
-  if echo "$COMMAND" | grep -qE "$pattern"; then
-    jq -n \
-      --arg reason "Comando bloqueado por política de segurança: $pattern" \
-      '{hookSpecificOutput: {permissionDecision: "deny", permissionDecisionReason: $reason}}'
-    exit 0
-  fi
-done
-
-# Permitir
-echo '{"continue": true}'
-exit 0
+python scripts/validate_multiagent_loop.py
+# or: powershell -File scripts/validate_multiagent_loop.ps1
 ```
 
-### 6.7 Hook: Linter Após Edição
+### 6.5 Optional: Claude Code hooks (not shipped)
 
-```bash
-#!/bin/bash
-# .claude/hooks/post-edit-lint.sh
-
-INPUT=$(cat)
-FILE=$(echo "$INPUT" | jq -r '.tool_input.path // ""')
-
-# Só rodar se o arquivo for código fonte
-if [[ "$FILE" =~ \.(ts|tsx|js|jsx)$ ]]; then
-  npx eslint "$FILE" --quiet 2>&1
-  if [ $? -ne 0 ]; then
-    # Exit 2 = erro bloqueante, enviado ao Claude para corrigir
-    echo "Lint falhou em $FILE. Corrija antes de continuar." >&2
-    exit 2
-  fi
-fi
-
-exit 0
-```
-
-### 6.8 Hook: Atualização de Contexto na Sessão
-
-```bash
-#!/bin/bash
-# .claude/hooks/session-start.sh
-
-TS_FILE=".claude/.session_hook_ts"
-INTERVAL=${GRAPH_SESSION_INTERVAL:-14400}  # 4h padrão
-
-if [ -f "$TS_FILE" ]; then
-  LAST=$(cat "$TS_FILE")
-  NOW=$(date +%s)
-  DIFF=$((NOW - LAST))
-  if [ $DIFF -lt $INTERVAL ]; then
-    exit 0  # Throttle — não atualizar ainda
-  fi
-fi
-
-# Atualizar knowledge graph ou índice em background
-<comando-de-atualização> &
-
-date +%s > "$TS_FILE"
-exit 0
-```
-
-### 6.9 Boas Práticas para Hooks
-
-| Regra | Motivo |
-|-------|--------|
-| Hooks devem completar em < 15s | Latência alta trava o fluxo |
-| Exit 2 apenas para erros reais bloqueantes | Não abuse — o Claude para e tenta corrigir |
-| Mensagem de erro deve ser acionável | "Rode `npm run lint` para corrigir" > "Lint falhou" |
-| Throttle em SessionStart | Evita re-execução desnecessária |
-| Não fazer chamadas de rede síncronas longas | Use background (`&`) ou hooks assíncronos |
-| Testar manualmente antes de ativar | `echo '{"tool_input":{"command":"rm -rf ."}}' \| bash .claude/hooks/pre-tool-bash.sh` |
+If your team later adds `hooks` in `settings.json` + `.claude/hooks/`, keep scripts under 15s, use exit code 2 only for real blockers, throttle SessionStart, and never log secrets. Prefer permissions `deny`/`ask` and `/review` first.
 
 ---
 
@@ -1865,7 +1694,7 @@ Observar falha → Categorizar → Ajustar instrução → Medir melhoria → Re
 
 ### 14.3 Versionamento de Artefatos de IA
 
-CLAUDE.md, settings.json, hooks e commands são código — devem ser versionados com o mesmo rigor que código de produção.
+CLAUDE.md, settings.json, commands e agents são código — devem ser versionados com o mesmo rigor que código de produção.
 
 ```bash
 # Commits granulares ao iterar
@@ -1903,7 +1732,7 @@ Context poisoning ocorre quando texto em comentários, documentação ou depend�
 | Prática preventiva | Como implementar |
 |-------------------|-----------------|
 | Auditar comentários em PRs | Tratar docs/comments com mesmo rigor que código |
-| Hook PreToolUse no Read | Alertar se modelo ler arquivos de dependências inesperados |
+| Permissions deny em paths sensíveis | Bloquear leitura de `.env` / secrets no settings |
 | Revisão humana de mudanças geradas | Especialmente para auth, infra, dados sensíveis |
 | Monitorar comportamento inesperado | Se o agente faz algo não instruído, investigar contexto carregado |
 
@@ -1914,7 +1743,7 @@ Context poisoning ocorre quando texto em comentários, documentação ou depend�
 ### Fase 1 — Fundação (Dia 1)
 
 ```bash
-mkdir -p .claude/{hooks,commands,agents}
+mkdir -p .claude/{commands,agents,memory/{work,durable,log},plans/archive}
 touch CLAUDE.md
 touch CLAUDE.local.md
 echo "CLAUDE.local.md" >> .gitignore
@@ -1926,12 +1755,12 @@ Criar obrigatoriamente:
 2. `.claude/settings.json` — permissões básicas (deny para credenciais e comandos destrutivos)
 3. `.env.example` — variáveis necessárias para o projeto (incluindo MCP servers)
 
-### Fase 2 — Hooks de Qualidade (Dias 2-3)
+### Fase 2 — Multi-agent loop (Dias 2-3)
 
-1. `.claude/hooks/pre-tool-bash.sh` — bloquear comandos perigosos
-2. `.claude/hooks/post-edit-lint.sh` — rodar linter após edições
-3. Configurar ambos em `settings.json`
-4. Testar cada hook manualmente antes de ativar
+1. Role agents: intake → orchestrator → planner → architect → engineer → executor → reviewer
+2. Commands `/multiagent`, `/plano`, `/review`
+3. Memory layers `work` / `durable` / `log`
+4. Run `scripts/validate_multiagent_loop.py` (or `.ps1`)
 
 ### Fase 3 — Commands Essenciais (Dias 3-4)
 
@@ -1971,13 +1800,14 @@ Criar obrigatoriamente:
 - [ ] `CLAUDE.local.md` e `settings.local.json` em `.gitignore`
 - [ ] `.env.example` com variáveis documentadas
 
-## Hooks
-- [ ] Hook PreToolUse para comandos Bash perigosos
-- [ ] Hook PostToolUse para linter após edições
-- [ ] Ambos testados manualmente
+## Loop multiagente
+- [ ] Papéis intake→reviewer em `agents/`
+- [ ] `/multiagent`, `/plano`, `/review`
+- [ ] `memory/work|durable|log`
+- [ ] `validate_multiagent_loop` passa
 
 ## Commands
-- [ ] `/review`, `/security-check`, `/pr`, `/plano`
+- [ ] `/review`, `/security-check`, `/pr`, `/plano`, `/multiagent`
 - [ ] Commands específicos do domínio
 
 ## Memória
@@ -1995,7 +1825,7 @@ Criar obrigatoriamente:
 - [ ] Worktree isolation validado
 
 ## Qualidade
-- [ ] Fluxo completo testado: edit → hook → /review → /pr
+- [ ] Fluxo completo testado: edit → /review → /pr
 - [ ] Primeiro plano executado com TodoWrite
 - [ ] Memórias salvas e índice MEMORY.md atualizado
 ```
@@ -2090,9 +1920,9 @@ Criar obrigatoriamente:
 ### Nível 2 — Intermediário
 
 - [ ] CLAUDE.md com few-shot examples para padrões principais
-- [ ] Hook PreToolUse bloqueando comandos perigosos
-- [ ] Hook PostToolUse rodando linter após edições
-- [ ] `/pr` e `/plano` commands
+- [ ] Papéis do loop (intake→reviewer) em `agents/`
+- [ ] `/pr`, `/plano`, `/multiagent`
+- [ ] `validate_multiagent_loop` passa
 - [ ] Pelo menos 3 memórias de feedback salvas
 - [ ] MCP configurado para ferramentas externas principais
 - [ ] Permissões MCP explícitas no settings.json
@@ -2106,7 +1936,7 @@ Criar obrigatoriamente:
 - [ ] Worktree isolation validado para execução paralela
 - [ ] Memória com todos os 4 tipos (user, feedback, project, reference)
 - [ ] MEMORY.md atualizado regularmente (< 200 linhas)
-- [ ] Hook SessionStart com throttle para atualização de contexto
+- [ ] Durable promote só pelo orchestrator (piloto)
 - [ ] Ciclo de melhoria iterativa estabelecido (revisão semanal)
 - [ ] Versionamento granular de artefatos `.claude/`
 
@@ -2114,23 +1944,25 @@ Criar obrigatoriamente:
 
 - [ ] CLAUDE.md < 200 linhas com few-shot, anti-padrões e comandos
 - [ ] Settings com modelo padrão, effort level e permissões completas
-- [ ] Hooks cobrindo PreToolUse, PostToolUse e SessionStart
 - [ ] Commands cobrindo todos os fluxos repetitivos com `allowed-tools`
+- [ ] Go-live checklist do loop (piloto sombra) concluído
 - [ ] Subagents com frontmatter completo e critérios mensuráveis
 - [ ] Memórias revisadas e sem entradas obsoletas
 - [ ] MCP com menor privilégio e credenciais via variáveis de ambiente
 - [ ] Plans com Mermaid, modelos por fase e critérios de encerramento
-- [ ] Context poisoning considerado (hooks de validação + revisão de deps)
+- [ ] Context poisoning considerado (permissions + revisão de deps)
 - [ ] Time consegue onboarding em < 1 dia usando a estrutura
 
 ---
 
 ## Referências
 
+- [MULTIAGENT_ENGINEERING_LOOP.md](MULTIAGENT_ENGINEERING_LOOP.md) — fluxo multiagente canônico deste repo
+- [MULTIAGENT_LOOP_CHECKLIST.md](MULTIAGENT_LOOP_CHECKLIST.md) — checklist e suíte
 - [Claude Code — Documentação Oficial](https://docs.anthropic.com/claude-code)
 - [Claude Code — CLAUDE.md](https://docs.anthropic.com/claude-code/claude-md)
 - [Claude Code — Settings](https://docs.anthropic.com/claude-code/settings)
-- [Claude Code — Hooks](https://docs.anthropic.com/claude-code/hooks)
+- [Claude Code — Hooks](https://docs.anthropic.com/claude-code/hooks) (opcional; não usado neste template)
 - [Claude Code — Memory](https://docs.anthropic.com/claude-code/memory)
 - [Claude Code — MCP](https://docs.anthropic.com/claude-code/mcp)
 - [Claude Code — Subagents](https://docs.anthropic.com/claude-code/sub-agents)

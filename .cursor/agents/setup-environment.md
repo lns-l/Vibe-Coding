@@ -1,13 +1,13 @@
 ---
 name: setup-environment
 description: >
-  Orienta setup local do projeto fictício Acme API: deps, env, MCP, hooks.
+  Orienta setup local do projeto fictício Acme API: deps, env, MCP.
   Use quando pedir "configurar ambiente" ou "primeiro clone".
 readonly: false
 ---
 
-> **Para que serve:** Agente de onboarding do ambiente local do template.
-> **Função:** Orientar cópia de `.env`, deps, MCP, hooks e validação após primeiro clone.
+> **Purpose:** Local onboarding for the template environment.
+> **Função:** Orientar cópia de `.env`, deps, MCP e validação após primeiro clone.
 
 # Agent: Setup Environment
 
@@ -28,12 +28,7 @@ readonly: false
 
 ### [3 — CURSOR]
 1. Confirmar rules em `.cursor/rules/` indexadas
-2. Hooks: testar `python .cursor/hooks/check-commit-msg.py`
-3. MCP: reiniciar Cursor após `mcp.env`; validar indicador verde
-
-### [4 — HOOKS OPCIONAIS]
-- `CURSOR_LINT_HOOK=on` + `CURSOR_LINT_CMD="ruff check src"`
-- `GRAPH_SESSION_HOOK=on` + `GRAPH_UPDATE_CMD="echo graph-placeholder"`
+2. MCP: reiniciar Cursor após `mcp.env`; validar indicador verde
 
 ## Constraints
 - Nunca commitar `.env` ou `mcp.env`

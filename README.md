@@ -21,7 +21,7 @@
 <details>
 <summary><strong>About (EN-US)</strong></summary>
 
-**Vibe Coding** is a template and comparison base for AI governance in real projects. It ships two versioned scaffolds (Cursor and Claude Code), long-form guides, fictional **Acme API** examples (Python/FastAPI + React), and *Purpose / Função* blocks across dozens of files for fast onboarding. AI structure **amplifies** human review — use this repo to compare approaches (rules vs `CLAUDE.md`, Python vs bash hooks, skills vs memory) before adopting them on your team.
+**Vibe Coding** is a template and comparison base for AI governance in real projects. It ships two versioned scaffolds (Cursor and Claude Code), the multi-agent engineering loop, long-form guides, fictional **Acme API** examples (Python/FastAPI + React), and *Purpose / Função* blocks for fast onboarding. AI structure **amplifies** human review — compare rules vs `CLAUDE.md`, skills vs memory, and the shared multi-agent loop before adopting on your team.
 
 </details>
 
@@ -38,12 +38,12 @@
 
 | Pilar | O que entrega |
 |-------|----------------|
-| **`.cursor/`** | Rules MDC, hooks Python, slash commands, agents, skills, plans, MCP, notepads — [catálogo completo](.cursor/README.md) |
-| **`.claude/`** | Settings, hooks bash, commands, subagents, plans, memória de exemplo — [catálogo completo](.claude/README.md) |
+| **`.cursor/`** | Rules MDC, slash commands, agents, skills, plans, MCP, notepads — [catálogo completo](.cursor/README.md) |
+| **`.claude/`** | Settings, commands, subagents, plans, memória de exemplo — [catálogo completo](.claude/README.md) |
 | **`CLAUDE.md` + raiz** | Constituição do projeto, env de exemplo, `.gitignore` — sem secrets reais no git |
 | **`docs/`** | Prompts práticos + guias de arquitetura (estrutura detalhada de cada scaffold) |
 
-> A estrutura de IA **não substitui** revisão humana — ela **amplifica** a qualidade dela. Use este repositório para **comparar abordagens** (rules vs CLAUDE.md, hooks Python vs bash, skills vs memory) antes de adotar no seu time.
+> A estrutura de IA **não substitui** revisão humana — ela **amplifica** a qualidade dela. Use este repositório para **comparar abordagens** (rules vs CLAUDE.md, skills vs memory, loop multiagente) antes de adotar no seu time.
 
 ---
 
@@ -53,11 +53,10 @@
 
 | Área | Conteúdo (resumo) |
 |------|-------------------|
-| **Rules** | Comportamento global, economia de tokens, Git, Docker, planos multiagente, padrões API/testes (exemplo Acme) |
-| **Hooks** | Conventional Commits, linter pré-commit, tarefa leve no início da sessão |
-| **Commands** | `/review`, `/pr`, `/plano-otimizado`, `/multiagent`, `/security-check`, `/infra-up` |
-| **Agents & skills** | Nova feature, auditoria de segurança, setup de ambiente; skills `create-feature` e `security-audit` |
-| **Plans & notepads** | Plano CRUD de exemplo; notepads de sprint e contrato API |
+| **Rules** | Comportamento global, loop multiagente, economia de tokens, Git, Docker, planos, padrões API/testes |
+| **Commands** | `/multiagent` (orquestrador), `/plano-otimizado`, `/review`, `/pr`, `/security-check`, `/infra-up` |
+| **Agents & skills** | Papéis do loop (intake→reviewer) + feature/security/setup; skill `multiagent-loop` |
+| **Memory / plans** | Camadas work/durable/log; plano CRUD com critério de aceite; notepads |
 
 Guia longo: [docs/CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) · Políticas: [MODEL_SELECTION_GUIDE.md](.cursor/MODEL_SELECTION_GUIDE.md), [PARALLEL_AGENTS.md](.cursor/PARALLEL_AGENTS.md)
 
@@ -65,10 +64,10 @@ Guia longo: [docs/CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) · 
 
 | Área | Conteúdo (resumo) |
 |------|-------------------|
-| **Settings & hooks** | Permissões versionadas; pré-bash, pós-edição e início de sessão |
-| **Commands** | `/review`, `/pr`, `/plano`, `/multiagent`, `/security-check`, `/api.health-check`, `/deploy.staging` |
-| **Subagents** | Nova feature e auditoria de segurança |
-| **Plans & memory** | Planos fictícios (export CSV, webhooks); templates e exemplos de `MEMORY.md` |
+| **Settings** | Permissões versionadas, MCP, modelo e env de exemplo |
+| **Commands** | `/multiagent`, `/plano`, `/review`, `/pr`, `/security-check`, `/api.health-check`, `/deploy.staging` |
+| **Subagents** | Papéis do loop (intake→reviewer) + feature/security |
+| **Plans & memory** | Planos fictícios; work/durable/log + templates `MEMORY.md` |
 
 Guia longo: [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) · Constituição na raiz: [CLAUDE.md](CLAUDE.md)
 
@@ -77,7 +76,7 @@ Guia longo: [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) · Constitui�
 | Conceito | Cursor | Claude Code |
 |----------|--------|-------------|
 | Regras persistentes | `.cursor/rules/*.mdc` | `CLAUDE.md` + rules locais |
-| Automação | `hooks.json` + Python | `settings.json` + bash |
+| Automação | Rules + commands + agents | `settings.json` + commands + agents |
 | Fluxos repetíveis | `commands/*.md` | `commands/*.md` |
 | Especialistas | `agents/*.md` | `agents/*.md` (subagents) |
 | Procedimentos longos | `skills/*/SKILL.md` | `memory/` + templates |
@@ -97,7 +96,7 @@ flowchart TB
         B -->|Cursor| C[Copie .cursor/ + docs Cursor]
         B -->|Claude| D[Copie .claude/ + CLAUDE.md]
         B -->|Ambos| E[Compare side-by-side]
-        C --> F[Adapte rules, hooks e commands ao seu stack]
+        C --> F[Adapte rules, commands e loop ao seu stack]
         D --> F
         E --> F
         F --> G[Crie arquivos locais gitignored]
@@ -111,13 +110,13 @@ flowchart TB
 2. **Escolha um scaffold** (ou os dois) e abra o README interno:
    - Cursor → [.cursor/README.md](.cursor/README.md)
    - Claude → [.claude/README.md](.claude/README.md)
-3. **Copie para o seu projeto** apenas o que fizer sentido (rules, hooks, commands, plans de exemplo).
+3. **Copie para o seu projeto** apenas o que fizer sentido (rules, commands, agents, plans de exemplo).
 4. **Configure localmente** (nunca commitar secrets):
    - Cursor: `cp .cursor/mcp.env.example .cursor/mcp.env` e preencha tokens se usar MCP.
    - Claude: `cp CLAUDE.local.md.example CLAUDE.local.md` e `.claude/settings.local.json.example` → `settings.local.json`.
    - App: variáveis em [.env.example](.env.example) → `.env` no seu fork.
 5. **Execute o fluxo de trabalho** com os [prompts](#prompts-práticos) adequados ao estágio (planejar → implementar → revisar).
-6. **Consulte os guias longos** quando for customizar hooks, permissões ou maturidade do setup.
+6. **Consulte os guias longos** e o [loop multiagente](docs/MULTIAGENT_ENGINEERING_LOOP.md) ao customizar permissões ou maturidade do setup.
 
 ### Fluxo diário (prompts)
 
@@ -186,10 +185,12 @@ Requisitos:
 
 | Documento | Escopo | Conteúdo |
 |-----------|--------|----------|
-| [CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | `.cursor/` | Rules MDC, hooks, skills, MCP, agents, plans e checklist de maturidade |
-| [CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | `.claude/` | CLAUDE.md, settings, permissões, hooks, memória, subagents e roteiro de implantação |
-| [BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Stack real | Boas práticas de produção (segurança, API, Docker, testes) como instruções reutilizáveis |
-| [I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Governança | Política bilíngue: EN-US canônico, PT-BR secundário, convenção `.pt-BR.md` |
+| [MULTIAGENT_ENGINEERING_LOOP.md](docs/MULTIAGENT_ENGINEERING_LOOP.md) · [PT-BR](docs/MULTIAGENT_ENGINEERING_LOOP.pt-BR.md) | Loop | Papéis, gates, memória, autonomia por risco |
+| [MULTIAGENT_LOOP_CHECKLIST.md](docs/MULTIAGENT_LOOP_CHECKLIST.md) | Loop | Checklist go-live + suíte `validate_multiagent_loop` |
+| [CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | `.cursor/` | Rules MDC, loop multiagente, skills, MCP, agents, plans |
+| [CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | `.claude/` | CLAUDE.md, settings, permissões, loop, memória, subagents |
+| [BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Stack real | Boas práticas de produção (segurança, API, Docker, testes) |
+| [I18N_WORKFLOW.md](docs/I18N_WORKFLOW.md) · [PT-BR](docs/I18N_WORKFLOW.pt-BR.md) | Governança | Política bilíngue EN-US / PT-BR |
 
 ### Mapa da documentação
 
@@ -203,6 +204,8 @@ Requisitos:
 | [.gitignore](.gitignore) | Exclusões: `.env`, `mcp.env`, settings locais, etc. |
 | [docs/cursor-vibe-coding-prompts.md](docs/cursor-vibe-coding-prompts.md) | Prompts Cursor: planejar, implementar, revisar |
 | [docs/claude-vibe-coding-prompts.md](docs/claude-vibe-coding-prompts.md) | Prompts Claude: descoberta, codar, fechar |
+| [docs/MULTIAGENT_ENGINEERING_LOOP.md](docs/MULTIAGENT_ENGINEERING_LOOP.md) · [PT-BR](docs/MULTIAGENT_ENGINEERING_LOOP.pt-BR.md) | Fluxo multiagente canônico |
+| [docs/MULTIAGENT_LOOP_CHECKLIST.md](docs/MULTIAGENT_LOOP_CHECKLIST.md) | Checklist e suíte do loop |
 | [docs/CURSOR_STRUCTURE_GUIDE.md](docs/CURSOR_STRUCTURE_GUIDE.md) | Guia longo da pasta `.cursor/` |
 | [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md) | Guia longo da pasta `.claude/` |
 | [docs/BEST_PRACTICES_FROM_PRODUCTION.md](docs/BEST_PRACTICES_FROM_PRODUCTION.md) | Práticas de produção importadas como instruções (não código) |
@@ -235,18 +238,17 @@ Vibe-Coding/
 │   ├── README.md
 │   ├── MODEL_SELECTION_GUIDE.md
 │   ├── PARALLEL_AGENTS.md
-│   ├── hooks.json · mcp.json · mcp.env.example · .cursorignore
+│   ├── mcp.json · mcp.env.example · .cursorignore
 │   ├── rules/                     # core, global, tool, example-stack, testing
-│   ├── hooks/                     # check-commit-msg, check-linter, update-graph-on-session
 │   ├── commands/                  # review, pr, plano-otimizado, multiagent, security-check, infra/
-│   ├── agents/                    # new-feature, security-audit, setup-environment
-│   ├── skills/                    # create-feature, security-audit
+│   ├── agents/                    # loop roles + feature/security/setup
+│   ├── skills/                    # multiagent-loop, create-feature, security-audit
+│   ├── memory/                    # work / durable / log
 │   ├── plans/                     # exemplo + archive/
 │   └── notepads/                  # sprint e contrato API (exemplos)
 └── .claude/                       # Scaffold Claude — ver .claude/README.md
     ├── README.md
     ├── settings.json · settings.local.json.example
-    ├── hooks/                     # pre-tool-bash, post-tool-edit, session-start
     ├── commands/                  # review, pr, plano, multiagent, security-check, api/, deploy/
     ├── agents/                    # new-feature, security-audit
     ├── plans/                     # exemplos + archive/
@@ -260,7 +262,7 @@ Vibe-Coding/
 
 - **Devs** que querem prompts consistentes e scaffolds prontos para copiar
 - **Times** comparando governança Cursor vs Claude Code antes de padronizar
-- **Tech leads** montando rules, hooks, commands e planos multiagente do zero
+- **Tech leads** montando rules, commands e planos multiagente do zero
 - **Contribuidores** deste template — mantendo exemplos agnósticos e sem secrets
 
 ---

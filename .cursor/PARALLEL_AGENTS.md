@@ -1,43 +1,49 @@
-# Protocolo de Paralelismo Seguro (template)
+# Safe parallelism protocol (multi-agent loop)
 
-> **Para que serve:** Regras para executar múltiplos subagents sem conflito de arquivos.
-> **Função:** Listar paths críticos, combinações seguras e checklist antes de paralelizar fases.
+> **Purpose:** Rules for parallel subagents without file conflicts or review contamination.
+> **Função:** Disjunção de arquivos, espaços isolados por papel e checklist pré-paralelo.
 
-## Regra fundamental
-Paralelize **apenas** quando os conjuntos de arquivos forem **disjuntos**.
+Canonical loop: [docs/MULTIAGENT_ENGINEERING_LOOP.md](../docs/MULTIAGENT_ENGINEERING_LOOP.md).
 
-## Arquivos críticos — nunca em paralelo
-Substitua pelos paths reais do seu projeto:
+## Fundamental rule
+Parallelize **only** when file sets are **disjoint**.
 
-| Arquivo | Motivo |
-|---------|--------|
-| `src/main.py` | Registro de routers e middlewares |
-| `src/config/settings.py` | Config central e env loading |
-| `src/dependencies.py` | Injeção de dependências |
-| `src/middleware/auth.py` | Auth global |
-| `docker-compose.yml` | Orquestração de infra |
+## Role isolation
+- Each role writes only under `.cursor/memory/work/<correlation-id>/<role>/`
+- No concurrent writers on the same path
+- Reviewer must not receive executor reasoning — only output + acceptance criteria
 
-## Combinações seguras
-- ✅ Backend (`src/routers/`) ↔ Frontend (`src/pages/`)
-- ✅ Testes novos ↔ código fonte (sem editar source)
-- ⚠️ Dois módulos backend — verificar imports compartilhados
-- ❌ Qualquer fase ↔ ponto de entrada (`main.py`)
-- ❌ Qualquer fase ↔ config central
+## Critical files — never in parallel
+Replace with real project paths:
 
-## Checklist pré-paralelo
-- [ ] Arquivos das fases são disjuntos?
-- [ ] Nenhuma fase toca arquivo crítico em paralelo?
-- [ ] Cada agente tem contexto suficiente?
-- [ ] Ordem de merge após paralelo está clara?
+| File | Reason |
+|------|--------|
+| `backend/app/main.py` | Router/middleware registration |
+| `backend/app/config.py` | Central settings |
+| `frontend/src/services/core/api.ts` | HTTP client base |
+| `docker-compose.yml` | Local orchestration |
 
-## Exemplo de conflito
+## Safe combinations
+- ✅ Backend routers ↔ Frontend pages (no shared critical entry)
+- ✅ New tests ↔ source (tests do not edit source)
+- ⚠️ Two backend modules — check shared imports
+- ❌ Any phase ↔ critical entry/config in parallel
+
+## Pre-parallel checklist
+- [ ] Phase file sets disjoint?
+- [ ] No critical file shared in the batch?
+- [ ] Each agent has enough context (criteria, not peer chain-of-thought)?
+- [ ] Merge/integration order after parallel clear?
+- [ ] Each phase has verifiable acceptance criteria?
+
+## Conflict example
 
 ```
 F1: src/models/user.ts, src/schemas/user.ts
 F2: src/pages/UserPage.tsx
-→ Interseção vazia ✅
+→ Empty intersection ✅
 
 F3: src/routes/users.ts, src/app.ts
 F4: src/routes/groups.ts, src/app.ts
-→ Interseção: src/app.ts ❌ serializar F3 e F4
+→ Intersection: src/app.ts ❌ serialize F3 and F4
 ```

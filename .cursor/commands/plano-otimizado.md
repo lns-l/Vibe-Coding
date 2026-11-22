@@ -1,28 +1,33 @@
 # /plano-otimizado
 
-> **Para que serve:** Slash command de planejamento multiagente no Cursor.
-> **Função:** Discovery obrigatório e geração de `.cursor/plans/<slug>_<hash>.plan.md` (template).
+> **Purpose:** Planner-stage slash command — produce a `.plan.md` with acceptance criteria.
+> **Função:** Discovery e plano multiagente alinhado ao loop engineering.
 
-Gera plano multiagente em `.cursor/plans/<slug>_<hash8>.plan.md` (template).
+Generates `.cursor/plans/<slug>_<hash8>.plan.md` as the **planner** output for `/multiagent`.
 
-## Fase 1 — Discovery (obrigatório)
+## Phase 1 — Discovery (required)
 1. `git status`, `git diff --stat`, `git log --oneline -5`
-2. Escopo do usuário e objetivo de negócio
-3. Mapear model, service, router, testes, frontend de referência
-4. Ler `PARALLEL_AGENTS.md` — marcar arquivos críticos
-5. Se ambíguo: parar e perguntar
+2. User scope and business objective (or load intake briefing)
+3. Map reference files; read `PARALLEL_AGENTS.md` for critical paths
+4. If ambiguous: stop and ask (fail closed) — do not invent scope
 
-## Fase 2 — Particionamento
-- Uma fase = unidade entregável coesa
-- Ordem: Models → Services → Routers → Tests → Frontend → Encerramento
-- 2–8 fases; paralelo só com arquivos disjuntos
+## Phase 2 — Partitioning
+- One phase = cohesive deliverable
+- Each phase **must** include verifiable acceptance criteria
+- Mark risk: read / reversible / irreversible
+- Flag `requires_human_approval` when external effect
+- Independent → parallel only if file sets disjoint; 2–8 phases
 
-## Fase 3 — Modelos
-- Atribuir tier por fase (ver `MODEL_SELECTION_GUIDE.md`)
+## Phase 3 — Models
+- Assign minimum sufficient tier (`MODEL_SELECTION_GUIDE.md`)
 
-## Fase 4 — Escrita
-- Seguir `plan-architect-agent.mdc`
-- Hash8 = primeiros 8 chars de `git rev-parse HEAD`
+## Phase 4 — Write
+- Follow `plan-architect-agent.mdc`
+- Hash8 = first 8 chars of `git rev-parse HEAD`
+- Write work copy under `.cursor/memory/work/<correlation-id>/planner/` when a run ID exists
 
-## Saída
-Resumo: fases, batches paralelos, modelo parent sugerido
+## Exit gate
+Every task/phase has verifiable acceptance criteria. Otherwise do not hand off to architect/executor.
+
+## Output
+Summary: phases, parallel batches, risk class, human gates, suggested parent model

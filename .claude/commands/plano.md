@@ -1,29 +1,33 @@
 ---
-description: "Gera plano em .claude/plans/<slug>_<hash8>.plan.md"
+description: "Generate plan in .claude/plans/<slug>_<hash8>.plan.md with acceptance criteria"
 allowed-tools:
   - Bash
   - Read
   - Glob
   - Grep
+  - Write
+  - AskUserQuestion
 ---
 
-> **Para que serve:** Slash command `/plano` no Claude Code.
-> **Função:** Discovery obrigatório e geração de `.claude/plans/<slug>_<hash>.plan.md` (template).
+> **Purpose:** Planner stage for the multi-agent engineering loop.
+> **Função:** Discovery e plano com critério de aceite verificável por tarefa.
 
 # /plano
 
-Gera plano multiagente após discovery completo.
+Spec: `docs/MULTIAGENT_ENGINEERING_LOOP.md` §4.2
 
-## Discovery (obrigatório)
-
+## Discovery (required)
 - `git status`, `git diff --stat`, `git log -5`
-- Escopo e arquivos por camada
-- Arquivos críticos do `CLAUDE.md`
-- Perguntar se ambíguo
+- Scope and files per layer; critical files from `CLAUDE.md`
+- Ask if ambiguous — fail closed
 
-## Escrita
+## Write
+- Mermaid with real dependencies
+- Behavioral changes (no implementation snippets)
+- **Every phase:** objective, inputs, output format, acceptance criteria, risk, dependencies
+- Max 8 phases
+- Save `.claude/plans/<slug>_<hash8>.plan.md`
+- Optional work copy: `.claude/memory/work/<correlation-id>/planner/`
 
-- Mermaid com dependências reais
-- Mudanças comportamentais (sem snippets)
-- Máximo 8 fases
-- Salvar em `.claude/plans/<slug>_<hash8>.plan.md`
+## Exit gate
+No handoff without verifiable acceptance on every task.

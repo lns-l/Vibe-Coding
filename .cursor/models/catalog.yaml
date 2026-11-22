@@ -1,0 +1,147 @@
+# Local model catalog — orchestrator-owned.
+# Refresh on every /multiagent (or explicit refresh) from platform-available slugs.
+# Do not put secrets here. Slugs are examples; mark available=false if not in the live session.
+
+schema_version: 1
+updated_at: "2026-11-22T20:27:00Z"
+updated_by: seed
+platform: cursor
+refresh_policy: on_multiagent_start_if_stale_or_mismatch
+
+sources:
+  - id: cursor-session
+    description: "Slugs listed as available_subagent_models in the live Cursor agent context"
+  - id: claude-code-ui
+    description: "Models selectable in Claude Code Agent / Task UI for this project"
+  - id: optional-provider-api
+    description: "Optional list-models probe via configured provider APIs (config.env only; never commit keys)"
+
+last_refresh:
+  at: null
+  source: null
+  note: "Seed catalog — orchestrator must refresh against live platform before first assignment"
+
+models:
+  - slug: composer-2.5-fast
+    family: composer
+    tier: economy
+    cost_rank: 1
+    capability_rank: 2
+    strengths: [edit, mechanical, speed]
+    available: true
+  - slug: cursor-grok-4.6-high-fast
+    family: grok
+    tier: high-fast
+    cost_rank: 2
+    capability_rank: 3
+    strengths: [speed, general, code]
+    available: true
+  - slug: grok-4.7-high-fast
+    family: grok
+    tier: high-fast
+    cost_rank: 2
+    capability_rank: 3
+    strengths: [speed, general, code]
+    available: true
+  - slug: claude-sonnet-5-5-medium
+    family: claude
+    tier: medium
+    cost_rank: 3
+    capability_rank: 4
+    strengths: [code, planning, review]
+    available: true
+  - slug: gemini-4-carbon-medium
+    family: gemini
+    tier: medium
+    cost_rank: 3
+    capability_rank: 3
+    strengths: [general, analysis]
+    available: true
+  - slug: gpt-5.6-sol-medium
+    family: gpt
+    tier: medium
+    cost_rank: 3
+    capability_rank: 4
+    strengths: [code, planning, general]
+    available: true
+  - slug: gemini-4-neon-high
+    family: gemini
+    tier: high
+    cost_rank: 4
+    capability_rank: 4
+    strengths: [analysis, reasoning]
+    available: true
+  - slug: claude-opus-5-5-medium
+    family: claude
+    tier: medium-high
+    cost_rank: 4
+    capability_rank: 5
+    strengths: [reasoning, architecture, review, security]
+    available: true
+  - slug: claude-fable-5-2-high
+    family: claude
+    tier: high
+    cost_rank: 5
+    capability_rank: 5
+    strengths: [reasoning, hard-problems, architecture]
+    available: true
+  - slug: muse-wonder-1.0-high
+    family: muse
+    tier: high
+    cost_rank: 4
+    capability_rank: 4
+    strengths: [creative, writing]
+    available: true
+
+# Prefer lowest cost_rank among models that meet min_capability_rank and strengths.
+role_defaults:
+  intake:
+    max_cost_rank: 2
+    min_capability_rank: 1
+    prefer_strengths: [speed, mechanical]
+  orchestrator:
+    max_cost_rank: 4
+    min_capability_rank: 3
+    prefer_strengths: [planning, reasoning]
+  planner:
+    max_cost_rank: 4
+    min_capability_rank: 3
+    prefer_strengths: [planning, code]
+  architect:
+    max_cost_rank: 5
+    min_capability_rank: 4
+    prefer_strengths: [architecture, reasoning, security]
+  engineer:
+    max_cost_rank: 3
+    min_capability_rank: 2
+    prefer_strengths: [code, edit]
+  executor:
+    max_cost_rank: 3
+    min_capability_rank: 2
+    prefer_strengths: [code, edit, mechanical]
+  reviewer:
+    max_cost_rank: 5
+    min_capability_rank: 3
+    prefer_strengths: [review, reasoning, code]
+    must_differ_from_role: executor
+
+demand_overrides:
+  security_auth_compliance:
+    min_capability_rank: 4
+    prefer_strengths: [security, reasoning]
+  mechanical_single_file:
+    max_cost_rank: 2
+    prefer_strengths: [edit, mechanical, speed]
+  cross_module_design:
+    min_capability_rank: 4
+    prefer_strengths: [architecture, reasoning]
+
+escalation:
+  triggers:
+    - MODEL_INSUFFICIENT
+    - ACCEPTANCE_FAIL_QUALITY
+    - TOOL_OR_CONTEXT_LIMIT
+  strategy: raise_capability_then_allow_higher_cost
+  max_model_escalations_per_task: 3
+  on_exhausted: escalate_human
+  record_in: work/<correlation-id>/orchestrator/model_assignments.md

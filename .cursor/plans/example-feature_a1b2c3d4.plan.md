@@ -1,92 +1,117 @@
 ---
 name: "example-item-crud"
-overview: "Exemplo de plano multiagente — CRUD fictício de Item (template)"
+overview: "Example multi-agent plan — fictional Item CRUD with acceptance criteria"
+correlationId: "run-20261122-a1b2c3d4"
+riskClass: "reversible"
 todos:
   - id: F1
-    content: "Fase 1 — Modelo e schemas Item"
+    content: "Phase 1 — Item model and schemas"
     status: pending
   - id: F2
-    content: "Fase 2 — Service e testes unitários"
+    content: "Phase 2 — Service and unit tests"
     status: pending
   - id: F3
-    content: "Encerramento"
+    content: "Closure"
     status: pending
 isProject: false
 ---
 
-> **Para que serve:** Exemplo de plano multiagente gerado para CRUD de Item (fictício).
-> **Função:** Demonstrar frontmatter, fases F1..FN, diagrama e critérios de encerramento no Cursor.
+> **Purpose:** Example multi-agent plan with verifiable acceptance per phase.
+> **Função:** Demonstrar frontmatter, aceite, risco e encerramento no loop engineering.
 
-# Exemplo — Item CRUD (template)
+# Example — Item CRUD (template)
 
-## Contexto
+## Context
 
-| Item | Detalhe |
-|------|---------|
+| Item | Detail |
+|------|--------|
 | Branch | `feature/example-item` |
-| Objetivo | Demonstrar estrutura de plano para comparação Cursor/Claude |
-| Referência | `src/models/` (criar quando implementar de verdade) |
-| Arquivos críticos | `src/main.py` |
-| Validação final | `pytest tests/ -x` (placeholder) |
+| Objective | Demonstrate plan structure for Cursor/Claude comparison |
+| Correlation ID | `run-20261122-a1b2c3d4` |
+| Reference | `src/models/` (create when implementing for real) |
+| Critical files | `src/main.py` |
+| Final validation | `pytest tests/ -x` (placeholder) |
+| Human gates | None (reversible draft only) |
 
-## Diagrama de dependências
+## Dependency diagram
 
 ```mermaid
 graph TD
-  F1[F1 Modelo] --> F2[F2 Service]
-  F2 --> F3[Encerramento]
+  F1[F1 Model] --> F2[F2 Service]
+  F2 --> F3[Closure]
 ```
 
-## Convenções de execução
+## Execution conventions
 
-- Código em inglês; comunicação PT-BR
-- Paralelo: não aplicável (2 fases sequenciais)
-- Validação apenas no Encerramento
+- Code in English; user chat PT-BR/EN as requested
+- Parallel: not applicable (sequential phases)
+- Who executes does not review — closure is a separate check
+- Validation only at Closure
 
-## Modelos por fase
+## Models per phase
 
-| Fase | Tier |
-|------|------|
-| F1 | econômico |
-| F2 | médio |
-| F3 | econômico |
-
----
-
-## Fase F1 — Modelo e schemas
-
-**Objetivo:** Definir entidade Item e contratos create/response.
-
-**Arquivos:**
-- `src/models/item.py` (criar — quando houver código real)
-- `src/schemas/item.py` (criar)
-
-**Mudanças:**
-- Campos: `id`, `name`, `is_active`, timestamps
-- Response sem campos internos
-
-**Checklist:**
-- [ ] Schema de criação valida `name` não vazio
+| Phase | Tier |
+|-------|------|
+| F1 | economy |
+| F2 | mid |
+| F3 | economy |
 
 ---
 
-## Fase F2 — Service
+## Phase F1 — Model and schemas
 
-**Objetivo:** Operações list/create com validação.
+**Objective:** Define Item entity and create/response contracts.
 
-**Arquivos:**
-- `src/services/item_service.py` (criar)
+**Inputs:** Briefing; existing model patterns if any.
 
-**Mudanças:**
-- `list_items`, `create_item` com erros de domínio claros
+**Output format:** `item` model + create/response schemas.
 
-**Checklist:**
-- [ ] Testes cobrem happy path e 422
+**Acceptance criteria:**
+- [ ] Schema rejects empty `name`
+- [ ] Response excludes internal-only fields
+- [ ] Files exist at declared paths
+
+**Files:**
+- `src/models/item.py` (create — when real code exists)
+- `src/schemas/item.py` (create)
+
+**Behavioral changes:**
+- Fields: `id`, `name`, `is_active`, timestamps
+
+**Risk:** reversible · `requires_human_approval: false`
+
+**Dependencies:** none
 
 ---
 
-## Encerramento
+## Phase F2 — Service
 
-**Critérios "verde":**
-- [ ] Comando de validação do projeto retorna 0
-- [ ] Todos `todo.status` = completed
+**Objective:** list/create operations with domain validation.
+
+**Inputs:** F1 schemas.
+
+**Output format:** service module + unit tests.
+
+**Acceptance criteria:**
+- [ ] `list_items` and `create_item` implemented
+- [ ] Tests cover happy path and 422
+- [ ] `pytest` subset for this module exits 0 (when code exists)
+
+**Files:**
+- `src/services/item_service.py` (create)
+
+**Behavioral changes:**
+- Clear domain errors on invalid create
+
+**Risk:** reversible · `requires_human_approval: false`
+
+**Dependencies:** F1
+
+---
+
+## Closure
+
+**Acceptance criteria:**
+- [ ] Project validation command exits 0
+- [ ] All `todo.status` = completed
+- [ ] Evidence attached under `work/<correlation-id>/executor/evidence/` when executed via `/multiagent`

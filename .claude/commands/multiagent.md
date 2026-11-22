@@ -1,28 +1,51 @@
 ---
-description: "Executa .plan.md em batches com subagents e worktrees"
+description: "Run the multi-agent engineering loop (intake → delivery) with model orchestration"
 allowed-tools:
   - Bash
   - Read
+  - Write
+  - Edit
   - Agent
   - TodoWrite
+  - AskUserQuestion
 ---
 
-> **Para que serve:** Slash command `/multiagent` no Claude Code.
-> **Função:** Executar plano `.plan.md` em batches com subagents e worktrees (template).
+> **Purpose:** Orchestrator entry for the multi-agent engineering loop.
+> **Função:** Executar o fluxo completo com subagents, memória em camadas e seleção de modelos.
 
 # /multiagent
 
-Argumento: caminho do plano, ex. `.claude/plans/example-feature_a1b2c3d4.plan.md`
+Spec: `docs/MULTIAGENT_ENGINEERING_LOOP.md`  
+Models: `.cursor/MODEL_SELECTION_GUIDE.md` · `.cursor/models/catalog.yaml`
 
-## Fases
+## Arguments
+- `/multiagent` — full loop; **model orchestration on**
+- `/multiagent --models` — force catalog refresh, then run
+- `/multiagent --refresh-models` — refresh catalog from live allow-list; report
+- Optional plan path or correlation ID
 
-1. Parse frontmatter + Mermaid → batches
-2. Validar disjunção de arquivos; respeitar críticos do `CLAUDE.md`
-3. Executar batches com `isolation: "worktree"` quando paralelo
-4. Consolidar; integrar arquivos críticos no parent
-5. Encerramento: validação + `todo.status` completed
+Natural-language triggers: "usar seleção de modelos", "multi-model", "defaults por papel", "orquestrar modelos".
 
-## Regras
+## Stages
+0. Orchestrator: discover platform models → refresh catalog → assign cheapest adequate per role → `model_assignments.md`
+1. Intake → briefing + correlation ID
+2. Orchestrator risk class
+3. Planner → acceptance criteria per task
+4. Architect → tools, risks, rollback
+5. Engineer → isolated work + dry-run
+6. Human approval if external effect
+7. Executor → evidence (explicit model from assignment)
+8. Reviewer → APPROVE/REJECT (independent; prefer different family than executor)
+9. Orchestrator consolidate + durable promote + log
+10. Retro → tests from defects
 
-- Nunca paralelizar fases com arquivo em comum
-- TodoWrite: uma fase `in_progress` por vez no parent
+## Model escalation
+On `MODEL_INSUFFICIENT` / quality model-fail: orchestrator picks a higher-capability model and **re-dispatches** the same task. Exhausted escalations → human.
+
+## Rules
+- Who executes does not review
+- Only orchestrator updates `.cursor/models/catalog.yaml` and durable memory
+- Disjoint files only when parallel; respect critical files in `CLAUDE.md`
+- Max 3 review rejections or 2 no-progress rounds → escalate
+- Never claim success without evidence
+- Never invent slugs outside the live allow-list; never store secrets in the catalog
